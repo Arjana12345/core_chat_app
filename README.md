@@ -50,4 +50,18 @@ core-chat-backend/
 ├── server.js
 └── package.json
 
+# update .env
+PORT=5000
+
+DB_HOST=localhost
+DB_USER=username
+DB_PASSWORD=password
+DB_NAME=core_chat
+
+JWT_SECRET=yoursecretkey
+
+# DB connection
+
+
+
 
