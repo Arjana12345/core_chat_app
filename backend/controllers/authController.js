@@ -23,9 +23,9 @@ const registerUser = async (req, res) => {
 
         console.log("user registered");
         console.log(err);
-
-        const token = generateToken(result.insertId);
         
+        const token = generateToken({ id: result.insertId, role: "user", });
+
         res.status(201).json({
           id: result.insertId,
           name,
@@ -72,12 +72,13 @@ const loginUser = (req, res) => {
         });
       }
 
-      const token = generateToken(user.id);
+      const token = generateToken({ id: result.insertId, role: user.role, });
 
       res.status(200).json({
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
         token,
       });
     });
