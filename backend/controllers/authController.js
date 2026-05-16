@@ -16,11 +16,16 @@ const registerUser = async (req, res) => {
       [name, email, hashedPassword],
       (err, result) => {
         if (err) {
+          console.log("not registered");
+          console.log(err);
           return res.status(500).json(err);
         }
 
-        const token = generateToken(result.insertId);
+        console.log("user registered");
+        console.log(err);
 
+        const token = generateToken(result.insertId);
+        
         res.status(201).json({
           id: result.insertId,
           name,
@@ -30,10 +35,59 @@ const registerUser = async (req, res) => {
       }
     );
   } catch (error) {
+    console.log("server error");
+    console.log(err);
     res.status(500).json(error);
   }
 };
 
+
+const loginUser = (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const sql = "SELECT * FROM users WHERE email = ?";
+
+    db.query(sql, [email], async (err, result) => {
+      if (err) {
+        return res.status(500).json(err);
+      }
+
+      if (result.length === 0) {
+        return res.status(401).json({
+          message: "Invalid Email or Password",
+        });
+      }
+
+      const user = result[0];
+
+      const isMatch = await bcrypt.compare(
+        password,
+        user.password
+      );
+
+      if (!isMatch) {
+        return res.status(401).json({
+          message: "Invalid Email or Password",
+        });
+      }
+
+      const token = generateToken(user.id);
+
+      res.status(200).json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        token,
+      });
+    });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+
 module.exports = {
   registerUser,
+  loginUser
 };
