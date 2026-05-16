@@ -12,6 +12,8 @@ const userRoutes = require("./routes/userRoutes");
 
 const socketHandler = require("./socket/socket");
 
+const messageRoutes = require("./routes/messageRoutes");
+
 const app = express();
 
 app.use(cors());
@@ -19,6 +21,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/messages", messageRoutes);
 
 app.get("/", (req, res) => {
   console.log("Core Chat API Running");

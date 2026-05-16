@@ -20,7 +20,7 @@ const protect = (req, res, next) => {
       );
 
       req.user = decoded;
-      
+      console.log("user details: ", req.user);
       next();
     } catch (error) {
         console.log("token not verified");
