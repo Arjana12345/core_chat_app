@@ -7,7 +7,9 @@ import {
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Chat from "./pages/Chat";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
+import { ToastContainer } from "react-toastify";
 
 function App() {
 
@@ -16,8 +18,6 @@ function App() {
     <BrowserRouter>
 
       <Routes>
-    
-        <ToastContainer />
 
         <Route
           path="/login"
@@ -31,15 +31,19 @@ function App() {
 
         <Route
           path="/chat"
-          element={<Chat />}
+          element={
+            <ProtectedRoute>
+              <Chat />
+            </ProtectedRoute>
+          }
         />
 
-
       </Routes>
+
+      <ToastContainer />
 
     </BrowserRouter>
   );
 }
 
 export default App;
-

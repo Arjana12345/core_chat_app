@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { useDispatch } from "react-redux";
 
@@ -8,9 +8,9 @@ import { toast } from "react-toastify";
 
 import { registerUser } from "../features/auth/authApi";
 
-import {
-  setCredentials,
-} from "../features/auth/authSlice";
+import { setCredentials,} from "../features/auth/authSlice";
+
+import { useSelector } from "react-redux";
 
 function Register() {
 
@@ -18,11 +18,24 @@ function Register() {
 
   const navigate = useNavigate();
 
+  const { user } = useSelector(
+        (state) => state.auth
+      );
+     
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+                                            name: "",
+                                            email: "",
+                                            password: "",
+                                          });
+
+  useEffect(() => {
+
+    if (user) {
+      navigate("/chat");
+    }
+
+  }, [user, navigate]);
+
 
   const handleChange = (e) => {
 
@@ -38,17 +51,16 @@ function Register() {
 
     try {
 
-      const data =
-        await registerUser(formData);
+      const data = await registerUser(formData);
 
       dispatch(setCredentials(data));
 
       toast.success("Registration Successful");
 
-      navigate("/chat");
-
+      
     } catch (error) {
-
+      console.log("registration error");
+      console.log(error);
       toast.error(
         error.response?.data?.message ||
         "Registration Failed"
