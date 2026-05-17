@@ -10,6 +10,9 @@ import { connectSocket, disconnectSocket,} from "../services/socket";
 
 import { getUsers } from "../features/chat/chatApi";
 
+import { getMessages } from "../features/chat/messageApi";
+
+
 function Chat() {
 
   const dispatch = useDispatch();
@@ -24,6 +27,7 @@ function Chat() {
 
   const [users, setUsers] = useState([]);
 
+  const [messages, setMessages] = useState([]);
 
     useEffect(() => {
 
@@ -65,6 +69,33 @@ function Chat() {
     };
 
     }, [user]);
+
+
+useEffect(() => {
+
+  if (!selectedUser) return;
+
+  const fetchMessages = async () => {
+
+    try {
+
+      const data =
+        await getMessages(
+          user.token,
+          selectedUser.id
+        );
+
+      setMessages(data);
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
+
+  fetchMessages();
+
+}, [selectedUser]);
 
 
   const handleLogout = () => {
@@ -110,7 +141,31 @@ function Chat() {
           }
           className="p-3 border rounded cursor-pointer hover:bg-gray-100"
         >
-          Demo User
+          {/* Demo User */}
+      
+        {
+            users.map((singleUser) => (
+
+                <div
+                key={singleUser.id}
+                onClick={() =>
+                    setSelectedUser(singleUser)
+                }
+                className="p-3 border rounded cursor-pointer hover:bg-gray-100 mb-2"
+                >
+
+                <h3 className="font-semibold">
+                    {singleUser.name}
+                </h3>
+
+                <p className="text-sm text-gray-500">
+                    {singleUser.email}
+                </p>
+
+                </div>
+            ))
+        }
+
         </div>
 
       </div>
@@ -130,26 +185,34 @@ function Chat() {
         </div>
 
         {/* MESSAGES */}
+      
+        {
+        messages.map((msg) => (
 
-        <div className="flex-1 p-4 overflow-y-auto">
+            <div
+            key={msg.id}
+            className={
+                msg.sender_id === user.user.id
+                ? "mb-3 text-right"
+                : "mb-3"
+            }
+            >
 
-          <div className="mb-3">
+            <div
+                className={
+                msg.sender_id === user.user.id
+                    ? "bg-black text-white inline-block px-4 py-2 rounded"
+                    : "bg-gray-200 inline-block px-4 py-2 rounded"
+                }
+            >
 
-            <div className="bg-gray-200 inline-block px-4 py-2 rounded">
-              Hello
+                {msg.message}
+
             </div>
 
-          </div>
-
-          <div className="mb-3 text-right">
-
-            <div className="bg-black text-white inline-block px-4 py-2 rounded">
-              Hi
             </div>
-
-          </div>
-
-        </div>
+        ))
+        }
 
         {/* MESSAGE INPUT */}
 
