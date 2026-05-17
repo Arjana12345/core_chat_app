@@ -22,8 +22,7 @@ const registerUser = async (req, res) => {
         }
 
         console.log("user registered");
-        console.log(err);
-        
+                
         const token = generateToken({ id: result.insertId, role: "user" });
 
         res.status(201).json({
