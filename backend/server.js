@@ -10,9 +10,10 @@ const authRoutes = require("./routes/authRoutes");
 
 const userRoutes = require("./routes/userRoutes");
 
-const socketHandler = require("./socket/socket");
+const { socketHandler } = require("./socket/socket");
 
 const messageRoutes = require("./routes/messageRoutes");
+
 
 const app = express();
 

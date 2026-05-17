@@ -1,12 +1,16 @@
+let ioInstance;
+
 const onlineUsers = {};
 
 const socketHandler = (io) => {
 
+  ioInstance = io;
+
   io.on("connection", (socket) => {
 
-    console.log("User Connected with socket id:", socket.id);
+    console.log("User Connected:", socket.id);
 
-    // USER CONNECT EVENT
+    // USER JOIN
     socket.on("join", (userId) => {
 
       onlineUsers[userId] = socket.id;
@@ -14,10 +18,11 @@ const socketHandler = (io) => {
       console.log("Online Users:", onlineUsers);
     });
 
-    // DISCONNECT EVENT
+    // DISCONNECT
     socket.on("disconnect", () => {
 
       for (const userId in onlineUsers) {
+
         if (onlineUsers[userId] === socket.id) {
           delete onlineUsers[userId];
         }
@@ -30,4 +35,11 @@ const socketHandler = (io) => {
 
 };
 
-module.exports = socketHandler;
+const getIO = () => ioInstance;
+
+module.exports = {
+  socketHandler,
+  onlineUsers,
+  getIO,
+};
+
