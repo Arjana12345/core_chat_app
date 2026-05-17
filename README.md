@@ -65,3 +65,56 @@ JWT_SECRET=yoursecretkey
 
 
 
+# Frontend
+Process:
+1. React Project Setup
+2. Tailwind Setup
+3. Redux Store
+4. Authentication Pages
+5. Protected Routes
+6. Socket Connection
+7. Chat Layout
+8. Real-Time Messaging UI
+9. Typing Indicator UI
+10. Seen/Delivered UI
+
+src/
+│
+├── app/
+│   └── store.js
+│
+├── features/
+│   ├── auth/
+│   ├── users/
+│   └── chat/
+│
+├── pages/
+│   ├── Login.jsx
+│   ├── Register.jsx
+│   └── Chat.jsx
+│
+├── components/
+│   ├── Sidebar/
+│   ├── ChatWindow/
+│   ├── MessageBubble/
+│   └── TypingIndicator/
+│
+├── services/
+│   ├── api.js
+│   └── socket.js
+│
+├── routes/
+│   └── ProtectedRoute.jsx
+│
+└── utils/
+
+
+Setup
+========
+
+npm create vite@latest frontend
+npm install
+npm install react-router-dom @reduxjs/toolkit react-redux axios socket.io-client
+npm install -D tailwindcss @tailwindcss/vite
+
+
