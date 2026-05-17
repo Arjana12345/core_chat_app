@@ -119,5 +119,6 @@ npm create vite@latest frontend
 npm install
 npm install react-router-dom @reduxjs/toolkit react-redux axios socket.io-client
 npm install -D tailwindcss @tailwindcss/vite
-
+# for notification
+npm install react-toastify
 

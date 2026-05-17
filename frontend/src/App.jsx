@@ -1,9 +1,45 @@
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Chat from "./pages/Chat";
+
+
 function App() {
+
   return (
-    <div className="text-3xl font-bold text-center mt-10">
-      Core Chat Frontend
-    </div>
+
+    <BrowserRouter>
+
+      <Routes>
+    
+        <ToastContainer />
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+        <Route
+          path="/chat"
+          element={<Chat />}
+        />
+
+
+      </Routes>
+
+    </BrowserRouter>
   );
 }
 
 export default App;
+
