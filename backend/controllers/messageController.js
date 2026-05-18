@@ -63,6 +63,9 @@ const getMessages = (req, res) => {
 
     const receiverId = req.params.receiverId;
 
+    console.log("sender_id =", senderId);
+    console.log("receiver_id =", receiverId);
+
     const sql = `
       SELECT * FROM messages
       WHERE
@@ -83,14 +86,19 @@ const getMessages = (req, res) => {
       (err, result) => {
 
         if (err) {
+          console.log("Messages not found");
+          console.log(err);
           return res.status(500).json(err);
         }
-
+        console.log("Message found");
+        console.log(result);
         res.status(200).json(result);
       }
     );
 
   } catch (error) {
+    console.log("server error");
+    console.log(error);
     res.status(500).json(error);
   }
 };
