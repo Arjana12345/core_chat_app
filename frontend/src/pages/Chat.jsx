@@ -1,4 +1,4 @@
-import { useEffect, useState,} from "react";
+import { useEffect, useState, useRef, } from "react";
 
 import { useDispatch, useSelector,} from "react-redux";
 
@@ -32,9 +32,15 @@ function Chat() {
 
   const [newMessage, setNewMessage] = useState("");
 
+  const [page, setPage] = useState(1); 
+  const [loading, setLoading] = useState(false); 
+  const [hasMore, setHasMore] = useState(true);
 
+  const chatRef = useRef(null);
+
+  // 
     useEffect(() => {
-      console.log("Running socket useeffect");
+    console.log("Running socket useEffect");
     console.log(user); 
     console.log(user.token);
     if (user?.token) {
@@ -86,81 +92,98 @@ function Chat() {
 
     }, [user]);
 
+    //  Fetch message initially then by scrolling
+     
+      // OUTSIDE useEffect
+      const fetchMessages = async ( currentPage = 1 ) => {
 
-useEffect(() => {
+        try {
 
-  if (!selectedUser) return;
+          const data = await getMessages(
+                                      user.token,
+                                      selectedUser,
+                                      currentPage
+                                    );
 
-  const fetchMessages = async () => {
+          setMessages((prev) => [
+            ...data,
+            ...prev,
+          ]);
 
-    try {
+        } catch (error) {
+          console.log(error);
+        }
+      };
 
-      console.log("selected user =", selectedUser);
-      const data = await getMessages(
-                                    user.token,
-                                    selectedUser
-                                  );
+      useEffect(() => {
+        if (selectedUser) {
+          fetchMessages(1);
+        }
 
-      console.log("all messsges = ");
-      console.log(data);
-      setMessages(data);
+      }, [selectedUser]);
 
-    } catch (error) {
+     
+     
 
-      console.log(error);
-    }
-  };
+      const handleScroll = () => {
 
-  fetchMessages();
+        if (chatRef.current.scrollTop <= 10) {
+          console.log("LOAD MORE");
+          const nextPage = page + 1;
 
-}, [selectedUser]);
+          setPage(nextPage);
 
-// handle send message
-const handleSendMessage = async () => {
+          fetchMessages(nextPage);
+        }
+      };
+    
 
-  if (!newMessage.trim()) return;
+    // handle send message
+    const handleSendMessage = async () => {
 
-  try {
-    console.log("send message", selectedUser);
-    const data = await sendMessageApi(
-                                  user.token,
-                                  selectedUser,
-                                  newMessage
-                                );
+      if (!newMessage.trim()) return;
 
-    console.log("send message data = ", data);
-    if(data.message_status == 201)
-    {
-        data.message = newMessage;
-    }
-    else 
-    {
-      data.message = "";
-    }
-    console.log(" updated data = ", data);
-    setMessages((prev) => [
-      ...prev,
-      data,
-    ]);
+      try {
+        console.log("send message", selectedUser);
+        const data = await sendMessageApi(
+                                      user.token,
+                                      selectedUser,
+                                      newMessage
+                                    );
 
-    setNewMessage("");
+        console.log("send message data = ", data);
+        if(data.message_status == 201)
+        {
+            data.message = newMessage;
+        }
+        else 
+        {
+          data.message = "";
+        }
+        console.log(" updated data = ", data);
+        setMessages((prev) => [
+          ...prev,
+          data,
+        ]);
 
-  } catch (error) {
-    console.log("send message error");
-    console.log(error);
-  }
-};
+        setNewMessage("");
+
+      } catch (error) {
+        console.log("send message error");
+        console.log(error);
+      }
+    };
 
 
+    const handleLogout = () => {
 
-  const handleLogout = () => {
+      disconnectSocket();
 
-    disconnectSocket();
+      dispatch(logout());
 
-    dispatch(logout());
+      navigate("/login");
+    };
 
-    navigate("/login");
-  };
 
   return (
 
@@ -218,6 +241,7 @@ const handleSendMessage = async () => {
 
       <div className="flex-1 flex flex-col">
 
+      
         {/* HEADER */}
 
         <div className="border-b p-4 font-bold text-xl">
@@ -226,8 +250,15 @@ const handleSendMessage = async () => {
 
         </div>
 
+       
+
         {/* MESSAGES */}
-      
+        <div
+          ref={chatRef}
+          onScroll={handleScroll}
+          className="h-[500px] overflow-y-auto p-4"
+        ></div>
+        
         {
         messages.map((msg) => (
 

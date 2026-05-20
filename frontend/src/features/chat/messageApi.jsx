@@ -3,11 +3,12 @@ import API from "../../services/api";
 
 export const getMessages = async (
   token,
-  receiverId
+  receiverId,
+  page
 ) => {
 
   const response = await API.get(
-    `/messages/${receiverId}`,
+    `/messages/${receiverId}?page=${page}&limit=20`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -17,6 +18,7 @@ export const getMessages = async (
 
   return response.data;
 };
+
 
 export const sendMessageApi = async (
   token,

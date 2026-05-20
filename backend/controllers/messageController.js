@@ -69,13 +69,17 @@ const getMessages = (req, res) => {
     console.log("sender_id =", senderId);
     console.log("receiver_id =", receiverId);
 
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 20; 
+    const offset = (page - 1) * limit;
+
     const sql = `
       SELECT * FROM messages
       WHERE
       (sender_id = ? AND receiver_id = ?)
       OR
       (sender_id = ? AND receiver_id = ?)
-      ORDER BY created_at ASC
+      ORDER BY created_at DESC LIMIT ? OFFSET ?
     `;
 
     db.query(
@@ -85,6 +89,8 @@ const getMessages = (req, res) => {
         receiverId,
         receiverId,
         senderId,
+        limit,
+        offset
       ],
       (err, result) => {
 
@@ -95,7 +101,7 @@ const getMessages = (req, res) => {
         }
         console.log("Message found");
         console.log(result);
-        res.status(200).json(result);
+        res.status(200).json(result.reverse());
       }
     );
 
