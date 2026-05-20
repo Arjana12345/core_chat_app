@@ -10,7 +10,7 @@ import { connectSocket, disconnectSocket,} from "../services/socket";
 
 import { getUsers } from "../features/chat/chatApi";
 
-import { getMessages } from "../features/chat/messageApi";
+import { getMessages, sendMessageApi,} from "../features/chat/messageApi";
 
 
 function Chat() {
@@ -23,42 +23,58 @@ function Chat() {
     (state) => state.auth
   );
 
+  console.log("user =", user);
   const [selectedUser, setSelectedUser] = useState(null);
 
   const [users, setUsers] = useState([]);
 
   const [messages, setMessages] = useState([]);
 
-    useEffect(() => {
+  const [newMessage, setNewMessage] = useState("");
 
+
+    useEffect(() => {
+      console.log("Running socket useeffect");
+    console.log(user); 
+    console.log(user.token);
     if (user?.token) {
 
         // SOCKET CONNECTION
-        const socket =
-        connectSocket(user.token);
+     
+        const socket = connectSocket(user.token);
 
         socket.on("connect", () => {
 
-        console.log(
-            "Socket Connected:",
-            socket.id
-        );
+          console.log("Socket Connected:", socket.id);
         });
 
+        socket.on("receiveMessage", (messageData) => {
+              console.log("Received Message:", messageData);
+
+              setMessages((prev) => [
+                ...prev,
+                messageData,
+              ]);
+            }
+          );
+        
+        socket.on("connect_error", (err) => {
+          console.log(err.message);
+        });
         // FETCH USERS
         const fetchUsers = async () => {
 
         try {
 
-            const data =
-            await getUsers(user.token);
-
+            const data = await getUsers(user.token);
+            console.log("all sidebar users =");
+            console.log(data);
             setUsers(data);
 
-        } catch (error) {
-
-            console.log(error);
-        }
+          } catch (error) {
+              console.log("Error to fetch sidebar users");
+              console.log(error);
+          }
         };
 
         fetchUsers();
@@ -79,12 +95,14 @@ useEffect(() => {
 
     try {
 
-      const data =
-        await getMessages(
-          user.token,
-          selectedUser.id
-        );
+      console.log("selected user =", selectedUser);
+      const data = await getMessages(
+                                    user.token,
+                                    selectedUser
+                                  );
 
+      console.log("all messsges = ");
+      console.log(data);
       setMessages(data);
 
     } catch (error) {
@@ -96,6 +114,43 @@ useEffect(() => {
   fetchMessages();
 
 }, [selectedUser]);
+
+// handle send message
+const handleSendMessage = async () => {
+
+  if (!newMessage.trim()) return;
+
+  try {
+    console.log("send message", selectedUser);
+    const data = await sendMessageApi(
+                                  user.token,
+                                  selectedUser,
+                                  newMessage
+                                );
+
+    console.log("send message data = ", data);
+    if(data.message_status == 201)
+    {
+        data.message = newMessage;
+    }
+    else 
+    {
+      data.message = "";
+    }
+    console.log(" updated data = ", data);
+    setMessages((prev) => [
+      ...prev,
+      data,
+    ]);
+
+    setNewMessage("");
+
+  } catch (error) {
+    console.log("send message error");
+    console.log(error);
+  }
+};
+
 
 
   const handleLogout = () => {
@@ -130,18 +185,7 @@ useEffect(() => {
 
         </div>
 
-        {/* TEMP USER LIST */}
-
-        <div
-          onClick={() =>
-            setSelectedUser({
-              id: 2,
-              name: "Demo User",
-            })
-          }
-          className="p-3 border rounded cursor-pointer hover:bg-gray-100"
-        >
-          {/* Demo User */}
+        {/* user list for sidebar */}
       
         {
             users.map((singleUser) => (
@@ -149,7 +193,7 @@ useEffect(() => {
                 <div
                 key={singleUser.id}
                 onClick={() =>
-                    setSelectedUser(singleUser)
+                    setSelectedUser(singleUser.id)
                 }
                 className="p-3 border rounded cursor-pointer hover:bg-gray-100 mb-2"
                 >
@@ -166,7 +210,7 @@ useEffect(() => {
             ))
         }
 
-        </div>
+        
 
       </div>
 
@@ -178,9 +222,7 @@ useEffect(() => {
 
         <div className="border-b p-4 font-bold text-xl">
 
-          {selectedUser
-            ? selectedUser.name
-            : "Select User"}
+          {selectedUser ? selectedUser.name: "Select User"}
 
         </div>
 
@@ -192,23 +234,22 @@ useEffect(() => {
             <div
             key={msg.id}
             className={
-                msg.sender_id === user.user.id
+                msg.sender_id === user.id
                 ? "mb-3 text-right"
                 : "mb-3"
             }
             >
 
-            <div
-                className={
-                msg.sender_id === user.user.id
-                    ? "bg-black text-white inline-block px-4 py-2 rounded"
-                    : "bg-gray-200 inline-block px-4 py-2 rounded"
-                }
-            >
-
+              <div
+                  className={
+                  msg.sender_id === user.id
+                      ? "bg-black text-white inline-block px-4 py-2 rounded"
+                      : "bg-gray-200 inline-block px-4 py-2 rounded"
+                  }
+              >
                 {msg.message}
 
-            </div>
+              </div>
 
             </div>
         ))
@@ -217,14 +258,19 @@ useEffect(() => {
         {/* MESSAGE INPUT */}
 
         <div className="border-t p-4 flex gap-3">
-
+         
           <input
             type="text"
             placeholder="Type message..."
+            value={newMessage}
+            onChange={(e) =>
+              setNewMessage(e.target.value)
+            }
             className="flex-1 border rounded p-3"
           />
-
+         
           <button
+            onClick={handleSendMessage}
             className="bg-black text-white px-5 rounded"
           >
             Send

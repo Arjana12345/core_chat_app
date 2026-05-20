@@ -7,7 +7,7 @@ const sendMessage = (req, res) => {
     const senderId = req.user.id;
 
     const { receiverId, message } = req.body;
-
+    console.log("message=", message);
     const sql =
       "INSERT INTO messages(sender_id, receiver_id, message) VALUES (?, ?, ?)";
 
@@ -23,26 +23,29 @@ const sendMessage = (req, res) => {
 
         
         // sending only receiver user
-        const receiverSocketId =
-          onlineUsers[receiverId];
+        const receiverSocketId = onlineUsers[receiverId];
+        console.log("Receiver ID:", receiverId); 
+        console.log( "Receiver Socket:", receiverSocketId );
 
         if (receiverSocketId) {
-
+          console.log("Running receiver socket ");
           const io = getIO();
 
           io.to(receiverSocketId).emit(
             "receiveMessage",
             {
-              senderId,
-              receiverId,
-              message,
+              id: result.insertId,
+              sender_id: senderId,
+              receiver_id: receiverId,
+              message, 
+              status: "delivered",
             }
           );
         }
         
         console.log("Message sent");
         res.status(201).json({
-          message: "Message Sent",
+          message_status: 201,
           messageId: result.insertId,
         });
 
@@ -61,7 +64,7 @@ const getMessages = (req, res) => {
 
     const senderId = req.user.id;
 
-    const receiverId = req.params.receiverId;
+    const receiverId = Number(req.params.receiverId);
 
     console.log("sender_id =", senderId);
     console.log("receiver_id =", receiverId);

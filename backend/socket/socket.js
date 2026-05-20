@@ -13,20 +13,19 @@ const socketHandler = (io) => {
 
     try {
 
-      const token =
-        socket.handshake.auth.token;
+      const token = socket.handshake.auth.token;
 
       if (!token) {
         return next(
           new Error("Authentication Error")
         );
       }
-
+      console.log("Socket Trying To Connect");
       const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET
-      );
-
+                                token,
+                                process.env.JWT_SECRET
+                              );
+      console.log(decoded);
       socket.user = decoded;
 
       next();
@@ -43,32 +42,27 @@ const socketHandler = (io) => {
   // socket connection
   io.on("connection", (socket) => {
 
-    console.log("User Connected:", socket.id);
-
-    // USER JOIN
+    console.log("socket connection running");
+    
+    console.log(socket.user);
 
     const userId = socket.user.id;
 
     onlineUsers[userId] = socket.id;
 
+    
     console.log("Online Users:", onlineUsers);
 
-
-
-    // DISCONNECT
+    // Disconnect user
     socket.on("disconnect", () => {
 
-      for (const userId in onlineUsers) {
+      delete onlineUsers[userId];
 
-        if (onlineUsers[userId] === socket.id) {
-          delete onlineUsers[userId];
-        }
-      }
-
-      console.log("User Disconnected:", socket.id);
+      console.log("User Disconnected:", userId);
     });
-
   });
+
+
 
 };
 
