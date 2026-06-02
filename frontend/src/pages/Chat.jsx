@@ -12,7 +12,7 @@ import { getUsers } from "../features/chat/chatApi";
 
 import { getMessages, sendMessageApi,} from "../features/chat/messageApi";
 
-
+console.log("Chat Page Loaded");
 function Chat() {
 
   const dispatch = useDispatch();
