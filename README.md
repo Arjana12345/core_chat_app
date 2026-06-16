@@ -1,22 +1,27 @@
 # core_chat_app
+
 A web app for providing secure communication between patient and Dr
 
 #Follow steps:
 
 # Initialize
+
 mkdir backend
 npm init -y
 
 # Main Dependencies
+
 npm install express mysql2 dotenv cors bcryptjs jsonwebtoken socket.io
 
-# Development dependencies 
+# Development dependencies
+
 npm install -D nodemon
 
 # Update package.json
+
 "scripts": {
-  "start": "node server.js",
-  "dev": "nodemon server.js"
+"start": "node server.js",
+"dev": "nodemon server.js"
 },
 
 # Create folder structure
@@ -24,33 +29,34 @@ npm install -D nodemon
 core-chat-backend/
 │
 ├── config/
-│   └── db.js
+│ └── db.js
 │
 ├── controllers/
-│   ├── authController.js
-│   └── userController.js
+│ ├── authController.js
+│ └── userController.js
 │
 ├── middleware/
-│   └── authMiddleware.js
+│ └── authMiddleware.js
 │
 ├── models/
-│   └── userModel.js
+│ └── userModel.js
 │
 ├── routes/
-│   ├── authRoutes.js
-│   └── userRoutes.js
+│ ├── authRoutes.js
+│ └── userRoutes.js
 │
 ├── socket/
-│   └── socket.js
+│ └── socket.js
 │
 ├── utils/
-│   └── generateToken.js
+│ └── generateToken.js
 │
 ├── .env
 ├── server.js
 └── package.json
 
 # update .env
+
 PORT=5000
 
 DB_HOST=localhost
@@ -62,11 +68,10 @@ JWT_SECRET=yoursecretkey
 
 # DB connection
 
-
-
-
 # Frontend
+
 Process:
+
 1. React Project Setup
 2. Tailwind Setup
 3. Redux Store
@@ -81,44 +86,77 @@ Process:
 src/
 │
 ├── app/
-│   └── store.js
+│ └── store.js
 │
 ├── features/
-│   ├── auth/
-│   ├── users/
-│   └── chat/
+│ ├── auth/
+│ ├── users/
+│ └── chat/
 │
 ├── pages/
-│   ├── Login.jsx
-│   ├── Register.jsx
-│   └── Chat.jsx
+│ ├── Login.jsx
+│ ├── Register.jsx
+│ └── Chat.jsx
 │
 ├── components/
-│   ├── Sidebar/
-│   ├── ChatWindow/
-│   ├── MessageBubble/
-│   └── TypingIndicator/
+│ ├── Sidebar/
+│ ├── ChatWindow/
+│ ├── MessageBubble/
+│ └── TypingIndicator/
 │
 ├── services/
-│   ├── api.js
-│   └── socket.js
+│ ├── api.js
+│ └── socket.js
 │
 ├── routes/
-│   └── ProtectedRoute.jsx
+│ └── ProtectedRoute.jsx
 │
 └── utils/
 │
 ├── App.jsx
 └── main.jsx
 
+# New sturcture for application
 
-Setup
-========
+src/
+│
+├── components/
+│ │
+│ ├── Sidebar/
+│ │ ├── Sidebar.jsx
+│ │ └── UserItem.jsx
+│ │
+│ ├── ChatWindow/
+│ │ ├── ChatWindow.jsx
+│ │ ├── MessageList.jsx
+│ │ ├── MessageBubble.jsx
+│ │ └── MessageInput.jsx
+│ │
+│ ├── LogoutButton/
+│ │ └── LogoutButton.jsx
+│ │
+│ └── common/
+│ └── Loader.jsx
+│
+├── hooks/
+│ └── useChatSocket.js
+│
+├── services/
+│ ├── api.js
+│ └── socket.js
+│
+├── pages/
+│ ├── Login.jsx
+│ ├── Register.jsx
+│ └── Chat.jsx
+
+# Setup
 
 npm create vite@latest frontend
 npm install
 npm install react-router-dom @reduxjs/toolkit react-redux axios socket.io-client
 npm install -D tailwindcss @tailwindcss/vite
-# for notification
-npm install react-toastify
 
+# for notification
+
+npm install react-toastify

@@ -12,6 +12,11 @@ import { getUsers } from "../features/chat/chatApi";
 
 import { getMessages, sendMessageApi } from "../features/chat/messageApi";
 
+// components
+import Sidebar from "../components/Sidebar/Sidebar";
+import MessageBubble from "../components/ChatWindow/MessageBubble";
+import MessageInput from "../components/ChatWindow/MessageInput";
+
 console.log("Chat Page Loaded");
 
 function Chat() {
@@ -240,40 +245,12 @@ function Chat() {
   return (
     <div className="h-screen flex">
       {/* SIDEBAR */}
-
-      <div className="w-80 border-r flex flex-col">
-        <div className="flex justify-between items-center mb-5">
-          <h2 className="text-2xl font-bold">Chats</h2>
-
-          <button
-            onClick={handleLogout}
-            className="bg-black text-white px-4 py-2 rounded"
-          >
-            Logout
-          </button>
-        </div>
-
-        {/* user list for sidebar */}
-        <div className="flex-1 overflow-y-auto">
-          {users.map((singleUser) => (
-            <div
-              key={singleUser.id}
-              onClick={() =>
-                setSelectedUser({ id: singleUser.id, name: singleUser.name })
-              }
-              className={
-                selectedUser.id === singleUser.id
-                  ? "bg-gray-200 p-3 border rounded cursor-pointer hover:bg-gray-200 mb-2"
-                  : "p-3 border rounded cursor-pointer hover:bg-gray-200 mb-2"
-              }
-            >
-              <h3 className="font-semibold">{singleUser.name}</h3>
-
-              <p className="text-sm text-gray-500">{singleUser.email}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Sidebar
+        users={users}
+        selectedUser={selectedUser}
+        setSelectedUser={setSelectedUser}
+        handleLogout={handleLogout}
+      />
 
       {/* CHAT WINDOW */}
 
@@ -291,53 +268,22 @@ function Chat() {
           onScroll={handleScroll}
           className="flex-1 overflow-y-auto p-4 bg-gray-50"
         >
-          {messages.map((msg) => {
-            console.log("Logged User:", user.id);
-            console.log("Message Sender:", msg.sender_id);
-            console.log("Message:", msg);
-
-            return (
-              <div
-                key={msg.id}
-                className={
-                  msg.sender_id === user.id
-                    ? "mb-3 flex justify-end"
-                    : "mb-3 flex justify-start"
-                }
-              >
-                <div
-                  className={
-                    msg.sender_id === user.id
-                      ? "bg-black text-white px-4 py-2 rounded-lg"
-                      : "bg-white border px-4 py-2 rounded-lg"
-                  }
-                >
-                  {msg.message}
-                </div>
-              </div>
-            );
-          })}
+          {messages.map((msg) => (
+            <MessageBubble
+              key={msg.id}
+              msg={msg}
+              isSender={msg.sender_id === user.id}
+            />
+          ))}
         </div>
 
         {/* MESSAGE INPUT */}
-
-        <div className="h-20 border-t bg-white flex items-center gap-2 p-4">
-          <input
-            type="text"
-            placeholder="Type message..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="flex-1 border rounded p-3"
-          />
-
-          <button
-            onClick={handleSendMessage}
-            className="bg-black text-white px-4 py-2 rounded"
-          >
-            Send
-          </button>
-        </div>
+        <MessageInput
+          newMessage={newMessage}
+          setNewMessage={setNewMessage}
+          handleKeyDown={handleKeyDown}
+          handleSendMessage={handleSendMessage}
+        />
       </div>
     </div>
   );
