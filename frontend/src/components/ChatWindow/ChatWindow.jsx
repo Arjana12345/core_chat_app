@@ -1,5 +1,4 @@
 import React from "react";
-import MessageBubble from "./MessageBubble";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
 

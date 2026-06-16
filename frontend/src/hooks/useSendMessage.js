@@ -1,4 +1,5 @@
 import { sendMessageApi } from "../features/chat/messageApi";
+import { scrollToBottom } from "../utils/scroll";
 
 const useSendMessage = ({
   user,
@@ -31,12 +32,7 @@ const useSendMessage = ({
 
         setMessages((prev) => [...prev, message]);
 
-        setTimeout(() => {
-          chatRef.current?.scrollTo({
-            top: chatRef.current.scrollHeight,
-            behavior: "smooth",
-          });
-        }, 100);
+        scrollToBottom(chatRef, "smooth");
 
         setNewMessage("");
       }

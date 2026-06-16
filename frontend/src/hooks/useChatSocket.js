@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { connectSocket, disconnectSocket } from "../services/socket";
+import { scrollToBottom } from "../utils/scroll";
 
 const useChatSocket = ({ user, setMessages, chatRef }) => {
   useEffect(() => {
@@ -22,12 +23,7 @@ const useChatSocket = ({ user, setMessages, chatRef }) => {
 
       setMessages((prev) => [...prev, messageData]);
 
-      setTimeout(() => {
-        chatRef.current?.scrollTo({
-          top: chatRef.current.scrollHeight,
-          behavior: "smooth",
-        });
-      }, 100);
+      scrollToBottom(chatRef, "smooth");
     });
 
     socket.on("connect_error", (err) => {

@@ -83,72 +83,52 @@ Process:
 9. Typing Indicator UI
 10. Seen/Delivered UI
 
+# Folder structure
+
 src/
 │
 ├── app/
 │ └── store.js
 │
 ├── features/
-│ ├── auth/
-│ ├── users/
-│ └── chat/
+│ └── auth/
+│ ├── authApi.js
+│ └── authSlice.js
 │
-├── pages/
-│ ├── Login.jsx
-│ ├── Register.jsx
-│ └── Chat.jsx
+├── hooks/
+│ ├── useChatSocket.js
+│ ├── useMessages.js
+│ ├── useUsers.js
+│ └── useSendMessage.js
 │
 ├── components/
 │ ├── Sidebar/
-│ ├── ChatWindow/
-│ ├── MessageBubble/
-│ └── TypingIndicator/
+│ │ └── Sidebar.jsx
+│ │
+│ ├── LogoutButton/
+│ │ └── LogoutButton.jsx
+│ │
+│ └── ChatWindow/
+│ ├── ChatWindow.jsx
+│ ├── MessageList.jsx
+│ ├── MessageBubble.jsx
+│ └── MessageInput.jsx
 │
-├── services/
-│ ├── api.js
-│ └── socket.js
+├── utils/
+│ └── scroll.js
 │
-├── routes/
-│ └── ProtectedRoute.jsx
-│
-└── utils/
+└── pages/
+| └── Chat.jsx
+| └── Login.jsx
+| └── Register.jsx
+|
+|└── Routes
+| └── ProtectedRoute.jsx
 │
 ├── App.jsx
 └── main.jsx
 
 # New sturcture for application
-
-src/
-│
-├── components/
-│ │
-│ ├── Sidebar/
-│ │ ├── Sidebar.jsx
-│ │ └── UserItem.jsx
-│ │
-│ ├── ChatWindow/
-│ │ ├── ChatWindow.jsx
-│ │ ├── MessageList.jsx
-│ │ ├── MessageBubble.jsx
-│ │ └── MessageInput.jsx
-│ │
-│ ├── LogoutButton/
-│ │ └── LogoutButton.jsx
-│ │
-│ └── common/
-│ └── Loader.jsx
-│
-├── hooks/
-│ └── useChatSocket.js
-│
-├── services/
-│ ├── api.js
-│ └── socket.js
-│
-├── pages/
-│ ├── Login.jsx
-│ ├── Register.jsx
-│ └── Chat.jsx
 
 # Setup
 

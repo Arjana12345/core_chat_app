@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getMessages } from "../features/chat/messageApi";
+import { scrollToBottom } from "../utils/scroll";
 
 const useMessages = ({ user, selectedUser, chatRef }) => {
   // message display
@@ -21,12 +22,7 @@ const useMessages = ({ user, selectedUser, chatRef }) => {
       if (currentPage === 1) {
         setMessages(data);
         // set scrolling first time
-        setTimeout(() => {
-          chatRef.current?.scrollTo({
-            top: chatRef.current.scrollHeight,
-            behavior: "auto",
-          });
-        }, 100);
+        scrollToBottom(chatRef, "auto");
       } else {
         setMessages((prev) => [...data, ...prev]);
 
