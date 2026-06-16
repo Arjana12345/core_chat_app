@@ -1,203 +1,249 @@
-import { useEffect, useState, useRef, } from "react";
+import { useEffect, useState, useRef } from "react";
 
-import { useDispatch, useSelector,} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import { useNavigate } from "react-router-dom";
 
-import { logout,} from "../features/auth/authSlice";
+import { logout } from "../features/auth/authSlice";
 
-import { connectSocket, disconnectSocket,} from "../services/socket";
+import { connectSocket, disconnectSocket } from "../services/socket";
 
 import { getUsers } from "../features/chat/chatApi";
 
-import { getMessages, sendMessageApi,} from "../features/chat/messageApi";
+import { getMessages, sendMessageApi } from "../features/chat/messageApi";
 
 console.log("Chat Page Loaded");
-function Chat() {
 
+function Chat() {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
-  const { user } = useSelector(
-    (state) => state.auth
-  );
+  const { user } = useSelector((state) => state.auth);
 
-  console.log("user =", user);
-  const [selectedUser, setSelectedUser] = useState(null);
+  // console.log("user =", user);
+  const [selectedUser, setSelectedUser] = useState({});
 
+  // sidebar users display
   const [users, setUsers] = useState([]);
 
+  // message display
+  // format, {sender_id,receiver_id,text}
   const [messages, setMessages] = useState([]);
 
+  // new message display
+  //  only text what login user typing
   const [newMessage, setNewMessage] = useState("");
 
-  const [page, setPage] = useState(1); 
-  const [loading, setLoading] = useState(false); 
-  const [hasMore, setHasMore] = useState(true);
+  // pagination to fetch mesages
+  const [page, setPage] = useState(1);
+
+  // loader
+  // const [loadingOlder] = useState(false);
 
   const chatRef = useRef(null);
 
-  // 
-    useEffect(() => {
+  // socket connection
+  useEffect(() => {
     console.log("Running socket useEffect");
-    console.log(user); 
-    console.log(user.token);
+
     if (user?.token) {
+      console.log("login user = ", user);
+      console.log("Token = ", user.token);
 
-        // SOCKET CONNECTION
-     
-        const socket = connectSocket(user.token);
+      // SOCKET CONNECTION
 
-        socket.on("connect", () => {
+      const socket = connectSocket(user.token);
 
-          console.log("Socket Connected:", socket.id);
-        });
+      socket.on("connect", () => {
+        console.log("Socket Connected:", socket.id);
+      });
 
-        socket.on("receiveMessage", (messageData) => {
-              console.log("Received Message:", messageData);
+      // when login user received persistent message
+      socket.on("receiveMessage", (messageData) => {
+        console.log("Received Message:", JSON.stringify(messageData, null, 2));
 
-              setMessages((prev) => [
-                ...prev,
-                messageData,
-              ]);
-            }
-          );
-        
-        socket.on("connect_error", (err) => {
-          console.log(err.message);
-        });
-        // FETCH USERS
-        const fetchUsers = async () => {
+        // checking if getting own message, then return
+        if (messageData.sender_id === user.id) {
+          return;
+        }
+        // else set message
+        setMessages((prev) => [...prev, messageData]);
 
+        // fix scrolling in chat window
+        setTimeout(() => {
+          chatRef.current?.scrollTo({
+            top: chatRef.current.scrollHeight,
+            behavior: "smooth",
+          });
+        }, 100);
+      });
+
+      // socker connection failed
+      socket.on("connect_error", (err) => {
+        console.log(err.message);
+      });
+
+      // FETCH USERS for sidebar
+      const fetchUsers = async () => {
         try {
+          const data = await getUsers(user.token);
 
-            const data = await getUsers(user.token);
-            console.log("all sidebar users =");
-            console.log(data);
-            setUsers(data);
+          console.log("all sidebar users =");
+          console.log(data);
 
-          } catch (error) {
-              console.log("Error to fetch sidebar users");
-              console.log(error);
-          }
-        };
-
-        fetchUsers();
-    }
-
-    return () => {
-        disconnectSocket();
-    };
-
-    }, [user]);
-
-    //  Fetch message initially then by scrolling
-     
-      // OUTSIDE useEffect
-      const fetchMessages = async ( currentPage = 1 ) => {
-
-        try {
-
-          const data = await getMessages(
-                                      user.token,
-                                      selectedUser,
-                                      currentPage
-                                    );
-
-          setMessages((prev) => [
-            ...data,
-            ...prev,
-          ]);
-
+          setUsers(data);
         } catch (error) {
+          console.log("Error to fetch sidebar users");
           console.log(error);
         }
       };
 
-      useEffect(() => {
-        if (selectedUser) {
-          fetchMessages(1);
-        }
+      fetchUsers();
+    }
 
-      }, [selectedUser]);
-
-     
-     
-
-      const handleScroll = () => {
-
-        if (chatRef.current.scrollTop <= 10) {
-          console.log("LOAD MORE");
-          const nextPage = page + 1;
-
-          setPage(nextPage);
-
-          fetchMessages(nextPage);
-        }
-      };
-    
-
-    // handle send message
-    const handleSendMessage = async () => {
-
-      if (!newMessage.trim()) return;
-
-      try {
-        console.log("send message", selectedUser);
-        const data = await sendMessageApi(
-                                      user.token,
-                                      selectedUser,
-                                      newMessage
-                                    );
-
-        console.log("send message data = ", data);
-        if(data.message_status == 201)
-        {
-            data.message = newMessage;
-        }
-        else 
-        {
-          data.message = "";
-        }
-        console.log(" updated data = ", data);
-        setMessages((prev) => [
-          ...prev,
-          data,
-        ]);
-
-        setNewMessage("");
-
-      } catch (error) {
-        console.log("send message error");
-        console.log(error);
-      }
-    };
-
-
-    const handleLogout = () => {
-
+    return () => {
       disconnectSocket();
+    };
+  }, [user]);
 
-      dispatch(logout());
+  //  Fetch message - on event trigger
+  // 1. when user selected from sidebar everytime
 
-      navigate("/login");
+  const fetchMessages = async (currentPage) => {
+    try {
+      const previousHeight = chatRef.current?.scrollHeight || 0;
+
+      // message between login user and selected user
+      const data = await getMessages(user.token, selectedUser.id, currentPage);
+
+      if (currentPage === 1) {
+        setMessages(data);
+        // set scrolling first time
+        setTimeout(() => {
+          chatRef.current?.scrollTo({
+            top: chatRef.current.scrollHeight,
+            behavior: "auto",
+          });
+        }, 100);
+      } else {
+        setMessages((prev) => [...data, ...prev]);
+
+        // set scrolling when paging changes user scrolling upside
+        setTimeout(() => {
+          const newHeight = chatRef.current?.scrollHeight || 0;
+
+          chatRef.current.scrollTop = newHeight - previousHeight;
+        }, 0);
+      }
+    } catch (error) {
+      console.log("Error while fetch messages");
+      console.log(error);
+    }
+  };
+
+  // event trigger selected used updated
+  //  fetch message calling
+  useEffect(() => {
+    if (!selectedUser.id) return;
+
+    const loadMessages = async () => {
+      setPage(1); // new user selected, so page must be 1
+      await fetchMessages(page);
     };
 
+    loadMessages();
+  }, [selectedUser.id]);
+
+  // scrolling
+  //  if scroll height increases then get old messages
+  const handleScroll = () => {
+    // if (loadingOlder) return;
+
+    if (chatRef.current.scrollTop <= 50) {
+      setPage((prev) => {
+        const nextPage = prev + 1;
+
+        fetchMessages(nextPage);
+
+        return nextPage;
+      });
+    }
+  };
+
+  // handle send message
+  // when login user send message by input
+  const handleSendMessage = async () => {
+    console.log("handleSendMessage called");
+    if (!newMessage.trim()) return;
+
+    try {
+      console.log("sending message To: ", selectedUser.id);
+      const data = await sendMessageApi(
+        user.token, // sender
+        selectedUser.id, // receiver
+        newMessage, // text
+      );
+
+      console.log("sending message data = ", data);
+      if (data.message_status == 201) {
+        data.message = newMessage;
+      } else {
+        data.message = "";
+      }
+      data.sender_id = user.id;
+      console.log(" updated data = ", data);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: data.messageId,
+          sender_id: user.id,
+          receiver_id: selectedUser.id,
+          message: data.message,
+        },
+      ]);
+
+      // scrolling
+      setTimeout(() => {
+        chatRef.current?.scrollTo({
+          top: chatRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }, 100);
+
+      setNewMessage("");
+    } catch (error) {
+      console.log("send message error");
+      console.log(error);
+    }
+  };
+
+  // event trigger by send button
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+
+      handleSendMessage();
+    }
+  };
+
+  // logout
+  const handleLogout = () => {
+    disconnectSocket();
+
+    dispatch(logout());
+
+    navigate("/login");
+  };
 
   return (
-
     <div className="h-screen flex">
-
       {/* SIDEBAR */}
 
-      <div className="w-[30%] border-r p-4">
-
+      <div className="w-80 border-r flex flex-col">
         <div className="flex justify-between items-center mb-5">
-
-          <h2 className="text-2xl font-bold">
-            Chats
-          </h2>
+          <h2 className="text-2xl font-bold">Chats</h2>
 
           <button
             onClick={handleLogout}
@@ -205,112 +251,94 @@ function Chat() {
           >
             Logout
           </button>
-
         </div>
 
         {/* user list for sidebar */}
-      
-        {
-            users.map((singleUser) => (
+        <div className="flex-1 overflow-y-auto">
+          {users.map((singleUser) => (
+            <div
+              key={singleUser.id}
+              onClick={() =>
+                setSelectedUser({ id: singleUser.id, name: singleUser.name })
+              }
+              className={
+                selectedUser.id === singleUser.id
+                  ? "bg-gray-200 p-3 border rounded cursor-pointer hover:bg-gray-200 mb-2"
+                  : "p-3 border rounded cursor-pointer hover:bg-gray-200 mb-2"
+              }
+            >
+              <h3 className="font-semibold">{singleUser.name}</h3>
 
-                <div
-                key={singleUser.id}
-                onClick={() =>
-                    setSelectedUser(singleUser.id)
-                }
-                className="p-3 border rounded cursor-pointer hover:bg-gray-100 mb-2"
-                >
-
-                <h3 className="font-semibold">
-                    {singleUser.name}
-                </h3>
-
-                <p className="text-sm text-gray-500">
-                    {singleUser.email}
-                </p>
-
-                </div>
-            ))
-        }
-
-        
-
+              <p className="text-sm text-gray-500">{singleUser.email}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* CHAT WINDOW */}
 
-      <div className="flex-1 flex flex-col">
-
-      
+      <div className="flex-1 flex flex-col h-screen">
         {/* HEADER */}
 
-        <div className="border-b p-4 font-bold text-xl">
-
-          {selectedUser ? selectedUser.name: "Select User"}
-
+        <div className="h-16 border-b flex items-center px-4 bg-white shadow-sm font-semibold">
+          {selectedUser.name || "Select User"}
         </div>
 
-       
-
         {/* MESSAGES */}
+
         <div
           ref={chatRef}
           onScroll={handleScroll}
-          className="h-[500px] overflow-y-auto p-4"
-        ></div>
-        
-        {
-        messages.map((msg) => (
+          className="flex-1 overflow-y-auto p-4 bg-gray-50"
+        >
+          {messages.map((msg) => {
+            console.log("Logged User:", user.id);
+            console.log("Message Sender:", msg.sender_id);
+            console.log("Message:", msg);
 
-            <div
-            key={msg.id}
-            className={
-                msg.sender_id === user.id
-                ? "mb-3 text-right"
-                : "mb-3"
-            }
-            >
-
+            return (
               <div
-                  className={
+                key={msg.id}
+                className={
                   msg.sender_id === user.id
-                      ? "bg-black text-white inline-block px-4 py-2 rounded"
-                      : "bg-gray-200 inline-block px-4 py-2 rounded"
-                  }
+                    ? "mb-3 flex justify-end"
+                    : "mb-3 flex justify-start"
+                }
               >
-                {msg.message}
-
+                <div
+                  className={
+                    msg.sender_id === user.id
+                      ? "bg-black text-white px-4 py-2 rounded-lg"
+                      : "bg-white border px-4 py-2 rounded-lg"
+                  }
+                >
+                  {msg.message}
+                </div>
               </div>
-
-            </div>
-        ))
-        }
+            );
+          })}
+        </div>
 
         {/* MESSAGE INPUT */}
 
-        <div className="border-t p-4 flex gap-3">
-         
+        <div className="h-20 border-t bg-white flex items-center gap-2 p-4">
           <input
             type="text"
             placeholder="Type message..."
             value={newMessage}
-            onChange={(e) =>
-              setNewMessage(e.target.value)
-            }
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="flex-1 border rounded p-3"
           />
-         
+
           <button
             onClick={handleSendMessage}
-            className="bg-black text-white px-5 rounded"
+            className="bg-black text-white px-4 py-2 rounded"
           >
             Send
           </button>
-
         </div>
-
       </div>
-
     </div>
   );
 }
