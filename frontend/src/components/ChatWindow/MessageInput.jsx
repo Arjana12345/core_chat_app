@@ -1,11 +1,14 @@
 import React from "react";
 
-const MessageInput = ({
-  newMessage,
-  setNewMessage,
-  handleKeyDown,
-  handleSendMessage,
-}) => {
+const MessageInput = ({ newMessage, setNewMessage, handleSendMessage }) => {
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+
+      handleSendMessage();
+    }
+  };
+
   return (
     <div className="h-20 border-t bg-white flex items-center gap-2 p-4">
       <input

@@ -1,4 +1,5 @@
 import React from "react";
+import LogoutButton from "../LogoutButton/LogoutButton";
 
 const Sidebar = ({ users, selectedUser, setSelectedUser, handleLogout }) => {
   return (
@@ -6,12 +7,7 @@ const Sidebar = ({ users, selectedUser, setSelectedUser, handleLogout }) => {
       <div className="flex justify-between items-center mb-5">
         <h2 className="text-2xl font-bold">Chats</h2>
 
-        <button
-          onClick={handleLogout}
-          className="bg-black text-white px-4 py-2 rounded"
-        >
-          Logout
-        </button>
+        <LogoutButton handleLogout={handleLogout} />
       </div>
       <div className="flex-1 overflow-y-auto">
         {users.map((singleUser) => (
