@@ -6,16 +6,18 @@ import { useNavigate } from "react-router-dom";
 
 import { logout } from "../features/auth/authSlice";
 
-import { connectSocket, disconnectSocket } from "../services/socket";
+import { disconnectSocket } from "../services/socket";
 
 import { getUsers } from "../features/chat/chatApi";
 
-import { getMessages, sendMessageApi } from "../features/chat/messageApi";
+import { sendMessageApi } from "../features/chat/messageApi";
 
 // components
 import Sidebar from "../components/Sidebar/Sidebar";
 import MessageBubble from "../components/ChatWindow/MessageBubble";
 import MessageInput from "../components/ChatWindow/MessageInput";
+import useChatSocket from "../hooks/useChatSocket";
+import useMessages from "../hooks/useMessages";
 
 console.log("Chat Page Loaded");
 
@@ -32,21 +34,24 @@ function Chat() {
   // sidebar users display
   const [users, setUsers] = useState([]);
 
-  // message display
-  // format, {sender_id,receiver_id,text}
-  const [messages, setMessages] = useState([]);
-
   // new message display
   //  only text what login user typing
   const [newMessage, setNewMessage] = useState("");
 
-  // pagination to fetch mesages
-  const [page, setPage] = useState(1);
-
-  // loader
-  // const [loadingOlder] = useState(false);
-
   const chatRef = useRef(null);
+
+  const { messages, setMessages, page, loadingOlder, loadOlderMessages } =
+    useMessages({
+      user,
+      selectedUser,
+      chatRef,
+    });
+
+  useChatSocket({
+    user,
+    setMessages,
+    chatRef,
+  });
 
   // socket connection
   useEffect(() => {
@@ -55,39 +60,6 @@ function Chat() {
     if (user?.token) {
       console.log("login user = ", user);
       console.log("Token = ", user.token);
-
-      // SOCKET CONNECTION
-
-      const socket = connectSocket(user.token);
-
-      socket.on("connect", () => {
-        console.log("Socket Connected:", socket.id);
-      });
-
-      // when login user received persistent message
-      socket.on("receiveMessage", (messageData) => {
-        console.log("Received Message:", JSON.stringify(messageData, null, 2));
-
-        // checking if getting own message, then return
-        if (messageData.sender_id === user.id) {
-          return;
-        }
-        // else set message
-        setMessages((prev) => [...prev, messageData]);
-
-        // fix scrolling in chat window
-        setTimeout(() => {
-          chatRef.current?.scrollTo({
-            top: chatRef.current.scrollHeight,
-            behavior: "smooth",
-          });
-        }, 100);
-      });
-
-      // socker connection failed
-      socket.on("connect_error", (err) => {
-        console.log(err.message);
-      });
 
       // FETCH USERS for sidebar
       const fetchUsers = async () => {
@@ -106,73 +78,13 @@ function Chat() {
 
       fetchUsers();
     }
-
-    return () => {
-      disconnectSocket();
-    };
   }, [user]);
 
-  //  Fetch message - on event trigger
-  // 1. when user selected from sidebar everytime
-
-  const fetchMessages = async (currentPage) => {
-    try {
-      const previousHeight = chatRef.current?.scrollHeight || 0;
-
-      // message between login user and selected user
-      const data = await getMessages(user.token, selectedUser.id, currentPage);
-
-      if (currentPage === 1) {
-        setMessages(data);
-        // set scrolling first time
-        setTimeout(() => {
-          chatRef.current?.scrollTo({
-            top: chatRef.current.scrollHeight,
-            behavior: "auto",
-          });
-        }, 100);
-      } else {
-        setMessages((prev) => [...data, ...prev]);
-
-        // set scrolling when paging changes user scrolling upside
-        setTimeout(() => {
-          const newHeight = chatRef.current?.scrollHeight || 0;
-
-          chatRef.current.scrollTop = newHeight - previousHeight;
-        }, 0);
-      }
-    } catch (error) {
-      console.log("Error while fetch messages");
-      console.log(error);
-    }
-  };
-
-  // event trigger selected used updated
-  //  fetch message calling
-  useEffect(() => {
-    if (!selectedUser.id) return;
-
-    const loadMessages = async () => {
-      setPage(1); // new user selected, so page must be 1
-      await fetchMessages(page);
-    };
-
-    loadMessages();
-  }, [selectedUser.id]);
-
-  // scrolling
-  //  if scroll height increases then get old messages
   const handleScroll = () => {
-    // if (loadingOlder) return;
+    if (loadingOlder) return;
 
     if (chatRef.current.scrollTop <= 50) {
-      setPage((prev) => {
-        const nextPage = prev + 1;
-
-        fetchMessages(nextPage);
-
-        return nextPage;
-      });
+      loadOlderMessages();
     }
   };
 
