@@ -27,32 +27,47 @@ npm install -D nodemon
 # Create folder structure
 
 core-chat-backend/
-│
+
 ├── config/
-│ └── db.js
+│ ├── db.js
 │
 ├── controllers/
 │ ├── authController.js
-│ └── userController.js
+│ ├── userController.js
+│ └── messageController.js
 │
-├── middleware/
-│ └── authMiddleware.js
+├── services/
+│ ├── authService.js
+│ ├── userService.js
+│ └── messageService.js
+│
+├── repositories/
+│ ├── userRepository.js
+│ └── messageRepository.js
 │
 ├── models/
-│ └── userModel.js
+│ ├── userModel.js
+│ └── messageModel.js
 │
-├── routes/
-│ ├── authRoutes.js
-│ └── userRoutes.js
+├── middleware/
+│ ├── authMiddleware.js
+│ └── errorMiddleware.js
 │
 ├── socket/
 │ └── socket.js
 │
 ├── utils/
-│ └── generateToken.js
+│ ├── generateToken.js
+│ ├── ApiError.js
+│ └── asyncHandler.js
 │
+├── routes/
+│ ├── authRoutes.js
+│ ├── userRoutes.js
+│ └── messageRoutes.js
+│
+└── server.js
 ├── .env
-├── server.js
 └── package.json
 
 # update .env
@@ -140,3 +155,8 @@ npm install -D tailwindcss @tailwindcss/vite
 # for notification
 
 npm install react-toastify
+
+# Run
+
+both app frontend and backend
+npm run dev
