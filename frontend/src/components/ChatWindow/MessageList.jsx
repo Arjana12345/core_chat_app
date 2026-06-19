@@ -19,4 +19,4 @@ const MessageList = ({ messages, user, chatRef, handleScroll }) => {
   );
 };
 
-export default MessageList;
+export default React.memo(MessageList);

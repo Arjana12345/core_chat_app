@@ -1,5 +1,6 @@
 import { sendMessageApi } from "../features/chat/messageApi";
 import { scrollToBottom } from "../utils/scroll";
+import { useCallback } from "react";
 
 const useSendMessage = ({
   user,
@@ -9,7 +10,7 @@ const useSendMessage = ({
   setNewMessage,
   chatRef,
 }) => {
-  const handleSendMessage = async () => {
+  const handleSendMessage = useCallback(async () => {
     if (!newMessage.trim()) return;
 
     try {
@@ -39,7 +40,7 @@ const useSendMessage = ({
     } catch (error) {
       console.log("Send message error", error);
     }
-  };
+  }, [user, selectedUser, setMessages, newMessage, setNewMessage, chatRef]);
 
   return {
     handleSendMessage,
