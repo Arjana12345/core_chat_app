@@ -51,6 +51,7 @@ core-chat-backend/
 │
 ├── middleware/
 │ ├── authMiddleware.js
+| |── adminMiddleware.js
 │ └── errorMiddleware.js
 │
 ├── socket/
