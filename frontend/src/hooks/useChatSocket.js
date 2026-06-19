@@ -14,7 +14,8 @@ const useChatSocket = ({ user, setMessages, chatRef }) => {
       console.log("Socket Connected:", socket.id);
     });
 
-    socket.on("receiveMessage", (messageData) => {
+    // Receive message listener
+    const handleReceiveMessage = (messageData) => {
       console.log("Received Message:", messageData);
 
       if (messageData.sender_id === user.id) {
@@ -24,14 +25,21 @@ const useChatSocket = ({ user, setMessages, chatRef }) => {
       setMessages((prev) => [...prev, messageData]);
 
       scrollToBottom(chatRef, "smooth");
-    });
+    };
+
+    // calling to receive message event
+    socket.on("receiveMessage", handleReceiveMessage);
 
     socket.on("connect_error", (err) => {
       console.log(err.message);
     });
 
     return () => {
+      console.log("Cleaning up socket connection");
+      socket.off("receiveMessage", handleReceiveMessage);
+      console.log("Socket listeners removed");
       disconnectSocket();
+      console.log("Socket disconnected on cleanup");
     };
   }, [user, setMessages, chatRef]);
 };
