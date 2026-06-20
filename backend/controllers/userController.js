@@ -1,47 +1,16 @@
-const getCurrentUser = (req, res) => {
-  try {
-    const sql = "SELECT id, name, email, role FROM users WHERE id = ?";
+const userService = require("../services/userService");
 
-    db.query(sql, [req.user.id], (err, result) => {
-      if (err) {
-        console.log("Error- while running sql for select user");
-        console.log(err);
-        return res.status(500).json(err);
-      }
+const getCurrentUser = async (req, res) => {
+  const result = await userService.getCurrentUser(req.user.id);
 
-      if (result.length === 0) {
-        console.log("user not found");
-        return res.status(404).json({
-          message: "User not found",
-        });
-      }
-
-      console.log("user found");
-      res.status(200).json(result[0]);
-    });
-  } catch (error) {
-    console.log("server error");
-    console.log(error);
-    res.status(500).json(error);
-  }
+  res.status(201).json(result);
 };
 
-const getAllUsers = (req, res) => {
-  try {
-    const currentUserId = req.user.id;
+const getAllUsers = async (req, res) => {
+  console.log("getAllUsers called with body:", req.user);
+  const result = await userService.getUsers(req.user.id);
 
-    const sql = "SELECT id, name, email FROM users WHERE id != ?";
-
-    db.query(sql, [currentUserId], (err, result) => {
-      if (err) {
-        return res.status(500).json(err);
-      }
-
-      res.status(200).json(result);
-    });
-  } catch (error) {
-    res.status(500).json(error);
-  }
+  res.status(201).json(result);
 };
 
 module.exports = {
