@@ -1,46 +1,49 @@
-const db = require("../config/db");
 const bcrypt = require("bcryptjs");
 const generateToken = require("../utils/generateToken");
+const authService = require("../services/authService");
 
+/*
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const sql =
-      "INSERT INTO users(name, email, password) VALUES (?, ?, ?)";
+    const sql = "INSERT INTO users(name, email, password) VALUES (?, ?, ?)";
 
-    db.query(
-      sql,
-      [name, email, hashedPassword],
-      (err, result) => {
-        if (err) {
-          console.log("not registered");
-          console.log(err);
-          return res.status(500).json(err);
-        }
-
-        console.log("user registered");
-                
-        const token = generateToken({ id: result.insertId, role: "user" });
-
-        res.status(201).json({
-          id: result.insertId,
-          name,
-          email,
-          token,
-        });
+    db.query(sql, [name, email, hashedPassword], (err, result) => {
+      if (err) {
+        console.log("not registered");
+        console.log(err);
+        return res.status(500).json(err);
       }
-    );
+
+      console.log("user registered");
+
+      const token = generateToken({ id: result.insertId, role: "user" });
+
+      res.status(201).json({
+        id: result.insertId,
+        name,
+        email,
+        token,
+      });
+    });
   } catch (error) {
     console.log("server error");
     console.log(err);
     res.status(500).json(error);
   }
 };
+*/
 
+const registerUser = async (req, res) => {
+  const result = await authService.register(req.body);
 
+  res.status(201).json(result);
+};
+
+/*
 const loginUser = (req, res) => {
   try {
     const { email, password } = req.body;
@@ -60,10 +63,7 @@ const loginUser = (req, res) => {
 
       const user = result[0];
 
-      const isMatch = await bcrypt.compare(
-        password,
-        user.password
-      );
+      const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
         return res.status(401).json({
@@ -86,9 +86,15 @@ const loginUser = (req, res) => {
     res.status(500).json(error);
   }
 };
+*/
 
+const loginUser = async (req, res) => {
+  const result = await authService.login(req.body);
+
+  res.json(result);
+};
 
 module.exports = {
   registerUser,
-  loginUser
+  loginUser,
 };

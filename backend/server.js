@@ -2,19 +2,18 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const http = require("http");
-const { Server } = require("socket.io"); 
+const { Server } = require("socket.io");
 const { socketHandler } = require("./socket/socket");
 
 dotenv.config();
 
-require("./config/db");
+// const db = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 
 const userRoutes = require("./routes/userRoutes");
 
 const messageRoutes = require("./routes/messageRoutes");
-
 
 const app = express();
 
@@ -30,10 +29,16 @@ app.get("/", (req, res) => {
   res.send("Core Chat API Running");
 });
 
+app.get("/test", async (req, res) => {
+  const db = require("./config/db");
+  const [rows] = await db.query("SELECT * FROM users");
 
+  console.log(rows);
 
+  res.json(rows);
+});
 
-const server =  http.createServer(app);
+const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
@@ -44,11 +49,8 @@ const io = new Server(server, {
 
 socketHandler(io);
 
-const PORT =  process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-
-  console.log(
-    `Server running on port ${PORT}`
-  );
+  console.log(`Server running on port ${PORT}`);
 });

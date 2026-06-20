@@ -124,13 +124,13 @@ src/
 │ ├── LogoutButton/
 │ │ └── LogoutButton.jsx
 │ │
-│ └── ChatWindow/
-│ ├── ChatWindow.jsx
-│ ├── MessageList.jsx
-│ ├── MessageBubble.jsx
-│ └── MessageInput.jsx
-│
-├── utils/
+│ ├── ChatWindow/
+│ | ├── ChatWindow.jsx
+│ | ├── MessageList.jsx
+│ | ├── MessageBubble.jsx
+│ | └── MessageInput.jsx
+│ |
+├─ utils/
 │ └── scroll.js
 │
 └── pages/

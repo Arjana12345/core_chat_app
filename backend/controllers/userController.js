@@ -1,5 +1,3 @@
-const db = require("../config/db");
-
 const getCurrentUser = (req, res) => {
   try {
     const sql = "SELECT id, name, email, role FROM users WHERE id = ?";
@@ -28,37 +26,25 @@ const getCurrentUser = (req, res) => {
   }
 };
 
-
 const getAllUsers = (req, res) => {
-
   try {
-
     const currentUserId = req.user.id;
 
-    const sql =
-      "SELECT id, name, email FROM users WHERE id != ?";
+    const sql = "SELECT id, name, email FROM users WHERE id != ?";
 
-    db.query(
-      sql,
-      [currentUserId],
-      (err, result) => {
-
-        if (err) {
-          return res.status(500).json(err);
-        }
-
-        res.status(200).json(result);
+    db.query(sql, [currentUserId], (err, result) => {
+      if (err) {
+        return res.status(500).json(err);
       }
-    );
 
+      res.status(200).json(result);
+    });
   } catch (error) {
-
     res.status(500).json(error);
   }
 };
 
-
 module.exports = {
   getCurrentUser,
-  getAllUsers
+  getAllUsers,
 };
