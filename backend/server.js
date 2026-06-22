@@ -1,34 +1,43 @@
 const express = require("express");
 const dotenv = require("dotenv");
+dotenv.config();
 const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
+
 const { socketHandler } = require("./socket/socket");
 
-dotenv.config();
-
-// const db = require("./config/db");
-
 const authRoutes = require("./routes/authRoutes");
-
 const userRoutes = require("./routes/userRoutes");
-
 const messageRoutes = require("./routes/messageRoutes");
 
 const app = express();
 
 app.use(cors());
+/*
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
+*/
+
 app.use(express.json());
 
+// routes
+
 app.use("/api/auth", authRoutes);
+
 app.use("/api/users", userRoutes);
+
 app.use("/api/messages", messageRoutes);
 
 app.get("/", (req, res) => {
-  console.log("Core Chat API Running");
   res.send("Core Chat API Running");
 });
 
+/*
 app.get("/test", async (req, res) => {
   const db = require("./config/db");
   const [rows] = await db.query("SELECT * FROM users");
@@ -37,8 +46,13 @@ app.get("/test", async (req, res) => {
 
   res.json(rows);
 });
+*/
+
+// create http server
 
 const server = http.createServer(app);
+
+// socket server
 
 const io = new Server(server, {
   cors: {
@@ -46,6 +60,8 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+
+// initialize socket
 
 socketHandler(io);
 

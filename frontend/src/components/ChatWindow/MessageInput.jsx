@@ -1,10 +1,16 @@
 import React from "react";
 
-const MessageInput = ({ newMessage, setNewMessage, handleSendMessage }) => {
+const MessageInput = ({
+  newMessage,
+  setNewMessage,
+  handleSendMessage,
+  selectedUser,
+}) => {
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-
+      console.log("handleKeyDown called with Enter key");
+      console.log("Selected user:", selectedUser);
       handleSendMessage();
     }
   };

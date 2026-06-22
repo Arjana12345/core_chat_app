@@ -94,10 +94,15 @@ const getMessages = (req, res) => {
 */
 
 const sendMessage = async (req, res) => {
+  console.log("send message controller called");
+  console.log("Request body:", req.body);
+  console.log("Request body:", req.user);
   const senderId = req.user.id;
 
   const { receiverId, message } = req.body;
-  const insertedId = await messageService.sendMessage({
+  console.log("message=", message);
+  console.log("receiverId=", receiverId);
+  const result = await messageService.sendMessage({
     senderId,
     receiverId,
     message,
@@ -113,10 +118,7 @@ const sendMessage = async (req, res) => {
     const io = getIO();
 
     io.to(receiverSocketId).emit("receiveMessage", {
-      id: insertedId,
-      sender_id: senderId,
-      receiver_id: receiverId,
-      message,
+      ...result,
       status: "delivered",
     });
   }
@@ -124,7 +126,7 @@ const sendMessage = async (req, res) => {
   console.log("Message sent");
   res.status(201).json({
     message_status: 201,
-    messageId: insertedId,
+    messageId: result.id,
   });
 };
 

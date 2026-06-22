@@ -1,5 +1,4 @@
-import { sendMessageApi } from "../features/chat/messageApi";
-import { scrollToBottom } from "../utils/scroll";
+import { getSocket } from "../services/socket";
 import { useCallback } from "react";
 
 const useSendMessage = ({
@@ -11,32 +10,22 @@ const useSendMessage = ({
   chatRef,
 }) => {
   const handleSendMessage = useCallback(async () => {
+    console.log("handleSendMessage called with newMessage:", newMessage);
+    console.log();
     if (!newMessage.trim()) return;
 
     try {
-      const data = await sendMessageApi(
-        user.token,
-        selectedUser.id,
-        newMessage,
-      );
+      const message = {
+        receiver_id: selectedUser.id,
+        message: newMessage,
+      };
 
-      if (data.message_status === 201) {
-        const message = {
-          id: data.messageId,
+      // send real-time message
+      console.log("Sending message via socket:", message);
+      const socket = getSocket();
+      socket.emit("sendMessage", message);
 
-          sender_id: user.id,
-
-          receiver_id: selectedUser.id,
-
-          message: newMessage,
-        };
-
-        setMessages((prev) => [...prev, message]);
-
-        scrollToBottom(chatRef, "smooth");
-
-        setNewMessage("");
-      }
+      setNewMessage("");
     } catch (error) {
       console.log("Send message error", error);
     }

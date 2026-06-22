@@ -37,6 +37,7 @@ const ChatWindow = ({
         newMessage={newMessage}
         setNewMessage={setNewMessage}
         handleSendMessage={handleSendMessage}
+        selectedUser={selectedUser}
       />
     </div>
   );

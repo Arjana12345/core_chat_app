@@ -6,11 +6,13 @@ const {
 const sendMessage = async ({ senderId, receiverId, message }) => {
   const id = await createMessage(senderId, receiverId, message);
 
+  console.log("Message created with ID:", id);
   return {
     id,
     sender_id: senderId,
     receiver_id: receiverId,
     message,
+    status: "delivered",
   };
 };
 
