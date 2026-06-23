@@ -34,7 +34,10 @@ const getMessages = async (userId, otherUserId, limit, offset) => {
  `,
     [userId, otherUserId, otherUserId, userId, limit, offset],
   );
-
+  console.log("=================start======================");
+  console.log("limit =", limit, "offset =", offset);
+  console.log("Retrieved messages:", rows);
+  console.log("=================end======================");
   return rows;
 };
 

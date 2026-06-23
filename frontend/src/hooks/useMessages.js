@@ -12,6 +12,8 @@ const useMessages = ({ user, selectedUser, chatRef }) => {
 
   const [loadingOlder, setLoadingOlder] = useState(false);
 
+  const [hasMore, setHasMore] = useState(true);
+
   const fetchMessages = async (currentPage) => {
     try {
       const previousHeight = chatRef.current?.scrollHeight || 0;
@@ -19,12 +21,15 @@ const useMessages = ({ user, selectedUser, chatRef }) => {
       // message between login user and selected user
       const data = await getMessages(user.token, selectedUser.id, currentPage);
 
+      const formattedMessages = [...data].reverse();
+      // console.log(formattedMessages);
       if (currentPage === 1) {
-        setMessages(data);
+        setMessages(formattedMessages);
+
         // set scrolling first time
         scrollToBottom(chatRef, "auto");
       } else {
-        setMessages((prev) => [...data, ...prev]);
+        setMessages((prev) => [...formattedMessages, ...prev]);
 
         // set scrolling when paging changes user scrolling upside
         setTimeout(() => {
@@ -33,6 +38,15 @@ const useMessages = ({ user, selectedUser, chatRef }) => {
           chatRef.current.scrollTop = newHeight - previousHeight;
         }, 0);
       }
+
+      if (data.length === 0) {
+        return false;
+      }
+
+      if (data.length < 20) {
+        return false;
+      }
+      return true;
     } catch (error) {
       console.log("Error while fetch messages");
       console.log(error);
@@ -53,15 +67,21 @@ const useMessages = ({ user, selectedUser, chatRef }) => {
   }, [selectedUser.id]);
 
   const loadOlderMessages = async () => {
-    if (loadingOlder) return;
+    if (loadingOlder || !hasMore) {
+      return;
+    }
 
     setLoadingOlder(true);
 
     const nextPage = page + 1;
 
-    await fetchMessages(nextPage);
+    const result = await fetchMessages(nextPage);
 
-    setPage((prev) => prev + 1);
+    if (result === false) {
+      setHasMore(false);
+    } else {
+      setPage(nextPage);
+    }
 
     setLoadingOlder(false);
   };
