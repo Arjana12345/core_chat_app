@@ -7,11 +7,8 @@ const { Server } = require("socket.io");
 
 const { socketHandler } = require("./socket/socket");
 
-const authRoutes = require("./routes/authRoutes");
-const userRoutes = require("./routes/userRoutes");
-const messageRoutes = require("./routes/messageRoutes");
-
 const app = express();
+const routes = require("./routes");
 
 app.use(cors());
 /*
@@ -26,13 +23,15 @@ app.use(
 app.use(express.json());
 
 // routes
-
+app.use("/api", routes);
+/*
+app.use("/api", routes);
 app.use("/api/auth", authRoutes);
 
 app.use("/api/users", userRoutes);
 
 app.use("/api/messages", messageRoutes);
-
+*/
 app.get("/", (req, res) => {
   res.send("Core Chat API Running");
 });
