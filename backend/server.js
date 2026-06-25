@@ -24,14 +24,7 @@ app.use(express.json());
 
 // routes
 app.use("/api", routes);
-/*
-app.use("/api", routes);
-app.use("/api/auth", authRoutes);
 
-app.use("/api/users", userRoutes);
-
-app.use("/api/messages", messageRoutes);
-*/
 app.get("/", (req, res) => {
   res.send("Core Chat API Running");
 });

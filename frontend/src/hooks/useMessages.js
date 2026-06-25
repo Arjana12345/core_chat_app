@@ -29,10 +29,11 @@ const useMessages = ({ user, selectedUser, chatRef }) => {
         lastId,
       );
 
-      const oldest = data[data.length - 1];
+      if (data.length) {
+        const oldest = data[data.length - 1];
 
-      setLastId(oldest.id);
-
+        setLastId(oldest.id);
+      }
       const formattedMessages = [...data].reverse();
       console.log(formattedMessages);
 
@@ -70,8 +71,8 @@ const useMessages = ({ user, selectedUser, chatRef }) => {
     setPage(1); // new user selected, so page must be 1
     setLastId(null);
     setHasMore(true);
-    setMessages([]); // clear previous messages when new user is selected
   };
+
   // event trigger selected used updated
   //  fetch message calling
   useEffect(() => {
