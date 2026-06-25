@@ -13,12 +13,15 @@ const createMessage = async (senderId, receiverId, message) => {
   return result.insertId;
 };
 
-const getMessages = async (userId, otherUserId, limit, offset) => {
-  const [rows] = await db.query(
-    `
+const getMessages = async (userId, otherUserId, limit, lastId) => {
+  console.log("retrieve before id =", lastId);
+  let sql;
+  let values;
+  if (!lastId) {
+    sql = `
  SELECT *
  FROM messages
- WHERE
+ WHERE (
  (
    sender_id = ?
    AND receiver_id = ?
@@ -27,15 +30,44 @@ const getMessages = async (userId, otherUserId, limit, offset) => {
  (
    sender_id = ?
    AND receiver_id = ?
- )
- ORDER BY created_at DESC
- LIMIT ? OFFSET ?
+  ) 
+)
+ ORDER BY created_at DESC 
+ LIMIT ?
 
- `,
-    [userId, otherUserId, otherUserId, userId, limit, offset],
-  );
+ `;
+    values = [userId, otherUserId, otherUserId, userId, limit];
+  } else {
+    sql = `
+ SELECT *
+ FROM messages
+ WHERE (
+ (
+   sender_id = ?
+   AND receiver_id = ?
+ )
+ OR
+ (
+   sender_id = ?
+   AND receiver_id = ?
+  ) 
+)
+  AND id < ?
+ ORDER BY created_at DESC 
+ LIMIT ?
+
+ `;
+    values = [userId, otherUserId, otherUserId, userId, lastId, limit];
+  }
+
   console.log("=================start======================");
-  console.log("limit =", limit, "offset =", offset);
+  console.log("limit =", limit, "lastId =", lastId);
+  console.log("query = ", sql);
+  console.log("values = ", values);
+
+  // Run sql
+  const [rows] = await db.query(sql, values);
+
   console.log("Retrieved messages:", rows);
   console.log("=================end======================");
   return rows;

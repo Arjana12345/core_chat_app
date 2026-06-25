@@ -1,31 +1,19 @@
 import API from "../../services/api";
 
-
-export const getMessages = async (
-  token,
-  receiverId,
-  page
-) => {
-
+export const getMessages = async (token, receiverId, page, lastId) => {
   const response = await API.get(
-    `/messages/${receiverId}?page=${page}&limit=20`,
+    `/messages/${receiverId}?page=${page}&limit=20&lastId=${lastId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
 
   return response.data;
 };
 
-
-export const sendMessageApi = async (
-  token,
-  receiverId,
-  message
-) => {
-
+export const sendMessageApi = async (token, receiverId, message) => {
   const response = await API.post(
     "/messages/send",
     {
@@ -36,7 +24,7 @@ export const sendMessageApi = async (
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
 
   return response.data;

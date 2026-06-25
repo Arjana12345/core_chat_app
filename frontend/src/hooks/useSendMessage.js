@@ -11,7 +11,7 @@ const useSendMessage = ({
 }) => {
   const handleSendMessage = useCallback(async () => {
     console.log("handleSendMessage called with newMessage:", newMessage);
-    console.log();
+
     if (!newMessage.trim()) return;
 
     try {

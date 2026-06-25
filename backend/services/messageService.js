@@ -16,10 +16,8 @@ const sendMessage = async ({ senderId, receiverId, message }) => {
   };
 };
 
-const fetchMessages = async ({ userId, otherUserId, page, limit }) => {
-  const offset = (page - 1) * limit;
-
-  return await getMessages(userId, otherUserId, limit, offset);
+const fetchMessages = async ({ userId, otherUserId, limit, lastId }) => {
+  return await getMessages(userId, otherUserId, limit, lastId);
 };
 
 module.exports = {
