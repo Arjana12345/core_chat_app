@@ -17,6 +17,7 @@ const getSocketId = (userId) => {
 };
 
 module.exports = {
+  onlineUsers,
   addUser,
   removeUser,
   getSocketId,
