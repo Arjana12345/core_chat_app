@@ -1,7 +1,8 @@
 const { onlineUsers, getIO } = require("../socket/socket");
 const messageService = require("../services/messageService");
+const asyncHandler = require("../middleware/asyncHandler");
 
-const sendMessage = async (req, res) => {
+const sendMessage = asyncHandler(async (req, res) => {
   console.log("Request body:", req.body);
   console.log("Request user:", req.user);
   const senderId = req.user.id;
@@ -34,9 +35,9 @@ const sendMessage = async (req, res) => {
     message_status: 201,
     messageId: result.id,
   });
-};
+});
 
-const getMessages = async (req, res) => {
+const getMessages = asyncHandler(async (req, res) => {
   const senderId = req.user.id;
   const receiverId = Number(req.params.receiverId);
   const lastId = Number(req.query.lastId);
@@ -55,7 +56,7 @@ const getMessages = async (req, res) => {
   });
 
   res.status(200).json(messages);
-};
+});
 
 module.exports = {
   sendMessage,
