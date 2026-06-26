@@ -12,6 +12,9 @@ const register = async ({ name, email, password }) => {
 
   const userId = await createUser(name, email, hashedPassword);
 
+  if (!userId) {
+    throw new AppError("User not created", 404);
+  }
   const token = generateToken({
     id: userId,
     role: "user",
