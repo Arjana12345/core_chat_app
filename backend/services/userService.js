@@ -1,3 +1,4 @@
+const { AppError } = require("../utils/AppError");
 const {
   findUserById,
   findAllUsersExcept,
@@ -7,7 +8,7 @@ const getCurrentUser = async (userId) => {
   const user = await findUserById(userId);
 
   if (!user) {
-    throw new Error("User not found");
+    throw new AppError("User not found", 404);
   }
 
   return user;

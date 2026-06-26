@@ -9,7 +9,7 @@ const { socketHandler } = require("./socket/socket");
 
 const app = express();
 const routes = require("./routes");
-
+const errorMiddleware = require("./middleware/errorMiddleware");
 app.use(cors());
 /*
 app.use(
@@ -24,6 +24,8 @@ app.use(express.json());
 
 // routes
 app.use("/api", routes);
+
+app.use(errorMiddleware);
 
 app.get("/", (req, res) => {
   res.send("Core Chat API Running");

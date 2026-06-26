@@ -1,24 +1,6 @@
-// const bcrypt = require("bcryptjs");
-
-// const {
-//   createUser,
-//   findUserByEmail,
-// } = require("../repositories/authRepository");
-
-// const register = async (data) => {
-//   const hashedPassword = await bcrypt.hash(data.password, 10);
-
-//   const id = await createUser(data.name, data.email, hashedPassword);
-
-//   return id;
-// };
-
-// module.exports = {
-//   register,
-// };
-
 const bcrypt = require("bcryptjs");
 const generateToken = require("../utils/generateToken");
+const { AppError } = require("../utils/AppError");
 
 const {
   createUser,
@@ -38,35 +20,6 @@ const register = async ({ name, email, password }) => {
   return { id: userId, name, email, token };
 };
 
-/*
-const login = async ({ email, password }) => {
-  const user = await findUserByEmail(email);
-
-  if (!user) {
-    throw new Error("Invalid Email or Password");
-  }
-
-  const match = await bcrypt.compare(password, user.password);
-
-  if (!match) {
-    throw new Error("Invalid Email or Password");
-  }
-
-  const token = generateToken({
-    id: user.id,
-    role: user.role,
-  });
-
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    token,
-  };
-};
-*/
-
 const login = async ({ email, password }) => {
   console.log("login called with email:", email, "and password:", password);
 
@@ -74,13 +27,13 @@ const login = async ({ email, password }) => {
 
   console.log(user);
   if (!user) {
-    throw new Error("User not found with the provided email");
+    throw new AppError("User not found with the provided email", 404);
   }
 
   const match = await bcrypt.compare(password, user.password);
 
   if (!match) {
-    throw new Error("Invalid Email or Password does not match");
+    throw new AppError("Invalid Email or Password does not match", 401);
   }
 
   const token = generateToken({

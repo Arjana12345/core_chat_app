@@ -14,7 +14,7 @@ const socketHandler = (io) => {
       const token = socket.handshake.auth.token;
 
       if (!token) {
-        return next(new Error("Token missing"));
+        return next(new AppError("Token missing", 401));
       }
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -23,7 +23,7 @@ const socketHandler = (io) => {
 
       next();
     } catch (error) {
-      next(new Error("Invalid token"));
+      next(new AppError("Invalid token", 401));
     }
   });
 
@@ -36,47 +36,6 @@ const socketHandler = (io) => {
 
     console.log("Online users:", onlineUsers);
 
-    /*
-    socket.on("sendMessage", async (data) => {
-      try {
-        const senderId = socket.user.id;
-
-        console.log("socket message", data);
-
-        // save message
-
-        const messageId = await createMessage(
-          senderId,
-          data.receiver_id,
-          data.message,
-        );
-
-        const message = {
-          id: messageId,
-
-          sender_id: senderId,
-
-          receiver_id: data.receiver_id,
-
-          message: data.message,
-        };
-
-        // send receiver
-
-        const receiverSocket = onlineUsers[String(data.receiver_id)];
-
-        if (receiverSocket) {
-          io.to(receiverSocket).emit("receiveMessage", message);
-        }
-
-        // send back sender
-
-        socket.emit("messageSent", message);
-      } catch (error) {
-        console.log("Socket message error", error);
-      }
-    });
-  */
     socket.on("sendMessage", async (data) => {
       try {
         const senderId = socket.user.id;
