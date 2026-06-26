@@ -10,15 +10,16 @@ const { socketHandler } = require("./socket/socket");
 const app = express();
 const routes = require("./routes");
 const errorMiddleware = require("./middleware/errorMiddleware");
-app.use(cors());
-/*
+// For local
+//app.use(cors());
+
+//For Development
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL,
     credentials: true,
   }),
 );
-*/
 
 app.use(express.json());
 
@@ -29,6 +30,13 @@ app.use(errorMiddleware);
 
 app.get("/", (req, res) => {
   res.send("Core Chat API Running");
+});
+
+app.get("/health", (req, res) => {
+  res.json({
+    status: "Backend running",
+    time: new Date(),
+  });
 });
 
 /*
