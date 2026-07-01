@@ -13,7 +13,7 @@ import { setCredentials,} from "../features/auth/authSlice";
 import { useSelector } from "react-redux";
 
 function Register() {
-
+  console.log("API URL:", import.meta.env.VITE_API_URL);
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
