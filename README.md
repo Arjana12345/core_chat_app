@@ -264,6 +264,14 @@ GET /api/messages/:receiverId
 POST /api/messages
 ```
 
+## Screenshot
+
+core_chat_app
+|\_docs/
+| | login.png
+| |\*\*register.png
+| |\_\_chat.png
+
 ---
 
 # 🔒 Security
