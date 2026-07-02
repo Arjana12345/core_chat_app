@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 
 import { toast } from "react-toastify";
 
@@ -83,10 +83,19 @@ function Login() {
 
         <button
           type="submit"
-          className="w-full bg-black text-white p-3 rounded"
+          className="w-full bg-black text-white p-3 rounded hover:bg-gray-800 transition"
         >
           Login
         </button>
+         <p className="text-center mt-5 text-gray-600">
+          Don't have an account?{" "}
+          <Link
+            to="/register"
+            className="text-blue-600 hover:text-blue-800 font-semibold"
+          >
+            Register
+          </Link>
+        </p>
       </form>
     </div>
   );
