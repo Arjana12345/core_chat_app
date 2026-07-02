@@ -1,5 +1,5 @@
 const { AppError } = require("../utils/AppError");
-const { getUserSocket } = require("./onlineUsers");
+const { getSocketId } = require("./onlineUsers");
 const { createMessage, sendMessage } = require("../services/messageService");
 
 const messageSocket = (io, socket) => {
@@ -17,7 +17,7 @@ const messageSocket = (io, socket) => {
 
       console.log("Saved message:", savedMessage);
 
-      const receiverSocket = getUserSocket(savedMessage.receiver_id);
+      const receiverSocket = getSocketId(savedMessage.receiver_id);
       console.log("Receiver socket:", receiverSocket);
 
       if (receiverSocket) {
