@@ -24,11 +24,11 @@ const register = async ({ name, email, password }) => {
 };
 
 const login = async ({ email, password }) => {
-  console.log("login called with email:", email, "and password:", password);
+  // console.log("login called with email:", email, "and password:", password);
 
   const user = await findUserByEmail(email);
 
-  console.log(user);
+  // console.log(user);
   if (!user) {
     throw new AppError("User not found with the provided email", 404);
   }

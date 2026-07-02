@@ -3,13 +3,13 @@ const messageService = require("../services/messageService");
 const asyncHandler = require("../middleware/asyncHandler");
 
 const sendMessage = asyncHandler(async (req, res) => {
-  console.log("Request body:", req.body);
-  console.log("Request user:", req.user);
+  // console.log("Request body:", req.body);
+  // console.log("Request user:", req.user);
   const senderId = req.user.id;
 
   const { receiverId, message } = req.body;
-  console.log("message=", message);
-  console.log("receiverId=", receiverId);
+  // console.log("message=", message);
+  // console.log("receiverId=", receiverId);
   const result = await messageService.sendMessage({
     senderId,
     receiverId,
@@ -18,10 +18,10 @@ const sendMessage = asyncHandler(async (req, res) => {
 
   // sending only receiver user
   const receiverSocketId = onlineUsers[receiverId];
-  console.log("Receiver Socket:", receiverSocketId);
+  //console.log("Receiver Socket:", receiverSocketId);
 
   if (receiverSocketId) {
-    console.log("Running receiver socket ");
+    //console.log("Running receiver socket ");
     const io = getIO();
 
     io.to(receiverSocketId).emit("receiveMessage", {
@@ -30,7 +30,7 @@ const sendMessage = asyncHandler(async (req, res) => {
     });
   }
 
-  console.log("Message sent");
+  //console.log("Message sent");
   res.status(201).json({
     message_status: 201,
     messageId: result.id,
@@ -43,10 +43,10 @@ const getMessages = asyncHandler(async (req, res) => {
   const lastId = Number(req.query.lastId);
   const limit = Number(req.query.limit) || 20;
 
-  console.log("sender_id =", senderId);
-  console.log("receiver_id =", receiverId);
-  console.log("lastId =", lastId);
-  console.log("limit =", limit);
+  // console.log("sender_id =", senderId);
+  // console.log("receiver_id =", receiverId);
+  // console.log("lastId =", lastId);
+  // console.log("limit =", limit);
 
   const messages = await messageService.fetchMessages({
     userId: senderId,

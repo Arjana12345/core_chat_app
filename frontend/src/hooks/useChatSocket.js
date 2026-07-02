@@ -16,7 +16,7 @@ const useChatSocket = ({ user, setMessages, chatRef }) => {
 
     // handle message sent listener
     const handleMessageSent = (message) => {
-      console.log("message saved:", message);
+      // console.log("Message Sent:", message);
 
       setMessages((prev) => [...prev, message]);
 
@@ -26,7 +26,7 @@ const useChatSocket = ({ user, setMessages, chatRef }) => {
 
     // Receive message listener
     const handleReceiveMessage = (messageData) => {
-      console.log("Received Message:", messageData);
+      // console.log("Received Message:", messageData);
 
       if (messageData.sender_id === user.id) {
         return;

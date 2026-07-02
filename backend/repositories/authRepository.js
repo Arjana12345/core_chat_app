@@ -14,7 +14,7 @@ const createUser = async (name, email, password) => {
 };
 
 const findUserByEmail = async (email) => {
-  console.log("findUserByEmail called with email:", email);
+  // console.log("findUserByEmail called with email:", email);
   const [rows] = await db.query(
     `
       SELECT *
@@ -24,7 +24,7 @@ const findUserByEmail = async (email) => {
     [email],
   );
 
-  console.log("findUserByEmail result:", rows);
+  // console.log("findUserByEmail result:", rows);
   return rows[0];
 };
 

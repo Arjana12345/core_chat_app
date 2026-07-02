@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { useNavigate,Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import { toast } from "react-toastify";
 
@@ -41,14 +41,11 @@ function Login() {
     try {
       const data = await loginUser(formData);
 
-      console.log("data =", data);
-
       dispatch(setCredentials(data));
 
       toast.success("Login Successful");
     } catch (error) {
-      console.log("login error");
-      console.log(error);
+      console.log("login error", error);
       toast.error(error.response?.data?.message || "Login Failed");
     }
   };
@@ -87,7 +84,7 @@ function Login() {
         >
           Login
         </button>
-         <p className="text-center mt-5 text-gray-600">
+        <p className="text-center mt-5 text-gray-600">
           Don't have an account?{" "}
           <Link
             to="/register"

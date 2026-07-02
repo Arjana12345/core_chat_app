@@ -17,10 +17,9 @@ const useMessages = ({ user, selectedUser, chatRef }) => {
   const [lastId, setLastId] = useState(null);
 
   const fetchMessages = async (currentPage, lastId) => {
-    console.log("fetchMessages function called");
     try {
       const previousHeight = chatRef.current?.scrollHeight || 0;
-      console.log("lastId =", lastId);
+      // console.log("lastId =", lastId);
       // message between login user and selected user
       const data = await getMessages(
         user.token,
@@ -35,7 +34,7 @@ const useMessages = ({ user, selectedUser, chatRef }) => {
         setLastId(oldest.id);
       }
       const formattedMessages = [...data].reverse();
-      console.log(formattedMessages);
+      // console.log(formattedMessages);
 
       if (currentPage === 1) {
         setMessages(formattedMessages);
@@ -79,8 +78,6 @@ const useMessages = ({ user, selectedUser, chatRef }) => {
     if (!selectedUser.id) return;
 
     const loadMessages = async () => {
-      console.log("new user selected, so page must be 1");
-
       resetPagination();
 
       await fetchMessages(1, null);
@@ -90,7 +87,7 @@ const useMessages = ({ user, selectedUser, chatRef }) => {
   }, [selectedUser.id]);
 
   const loadOlderMessages = async () => {
-    console.log("loadOlderMessages called");
+    // console.log("loadOlderMessages called");
     if (loadingOlder || !hasMore) {
       return;
     }
@@ -102,7 +99,7 @@ const useMessages = ({ user, selectedUser, chatRef }) => {
     const result = await fetchMessages(nextPage, lastId);
 
     if (result === false) {
-      console.log("no more messages to load for this user");
+      // console.log("No more messages to load for this user");
       setHasMore(false);
     } else {
       console.log("more messages to load");

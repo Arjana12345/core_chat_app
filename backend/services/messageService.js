@@ -7,7 +7,7 @@ const {
 const sendMessage = async ({ senderId, receiverId, message }) => {
   const id = await createMessage(senderId, receiverId, message);
 
-  console.log("Message created with ID:", id);
+  // console.log("Message created with ID:", id);
 
   if (!id) {
     throw new AppError("Message not created", 404);

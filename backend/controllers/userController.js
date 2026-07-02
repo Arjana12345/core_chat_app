@@ -8,7 +8,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 const getAllUsers = asyncHandler(async (req, res) => {
-  console.log("getAllUsers called with body:", req.user);
+  // console.log("getAllUsers called with body:", req.user);
   const result = await userService.getUsers(req.user.id);
 
   res.status(201).json(result);

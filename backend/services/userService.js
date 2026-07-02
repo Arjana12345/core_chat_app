@@ -15,7 +15,7 @@ const getCurrentUser = async (userId) => {
 };
 
 const getUsers = async (userId) => {
-  console.log("getUsers called with userId:", userId);
+  // console.log("getUsers called with userId:", userId);
   return await findAllUsersExcept(userId);
 };
 

@@ -7,16 +7,16 @@ const useUsers = (user) => {
   useEffect(() => {
     if (!user?.token) return;
 
-    console.log("login user = ", user);
-    console.log("Token = ", user.token);
+    // console.log("login user = ", user);
+    // console.log("Token = ", user.token);
 
     // FETCH USERS for sidebar
     const fetchUsers = async () => {
       try {
         const data = await getUsers(user.token);
 
-        console.log("all sidebar users =");
-        console.log(data);
+        // console.log("all sidebar users =");
+        // console.log(data);
 
         setUsers(data);
       } catch (error) {

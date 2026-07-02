@@ -8,37 +8,30 @@ import { toast } from "react-toastify";
 
 import { registerUser } from "../features/auth/authApi";
 
-import { setCredentials,} from "../features/auth/authSlice";
+import { setCredentials } from "../features/auth/authSlice";
 
 import { useSelector } from "react-redux";
 
 function Register() {
-  console.log("API URL:", import.meta.env.VITE_API_URL);
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
-  const { user } = useSelector(
-        (state) => state.auth
-      );
-     
+  const { user } = useSelector((state) => state.auth);
+
   const [formData, setFormData] = useState({
-                                            name: "",
-                                            email: "",
-                                            password: "",
-                                          });
+    name: "",
+    email: "",
+    password: "",
+  });
 
   useEffect(() => {
-
     if (user) {
       navigate("/chat");
     }
-
   }, [user, navigate]);
 
-
   const handleChange = (e) => {
-
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -46,40 +39,28 @@ function Register() {
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     try {
-
       const data = await registerUser(formData);
 
       dispatch(setCredentials(data));
 
       toast.success("Registration Successful");
-
-      
     } catch (error) {
-      console.log("registration error");
-      console.log(error);
-      toast.error(
-        error.response?.data?.message ||
-        "Registration Failed"
-      );
+      console.log("registration error", error);
+
+      toast.error(error.response?.data?.message || "Registration Failed");
     }
   };
 
   return (
-
     <div className="flex justify-center items-center h-screen bg-gray-100">
-
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow-md w-96"
       >
-
-        <h2 className="text-3xl font-bold mb-6 text-center">
-          Register
-        </h2>
+        <h2 className="text-3xl font-bold mb-6 text-center">Register</h2>
 
         <input
           type="text"
@@ -117,9 +98,7 @@ function Register() {
         >
           Register
         </button>
-
       </form>
-
     </div>
   );
 }

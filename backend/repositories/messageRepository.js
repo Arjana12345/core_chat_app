@@ -14,7 +14,7 @@ const createMessage = async (senderId, receiverId, message) => {
 };
 
 const getMessages = async (userId, otherUserId, limit, lastId) => {
-  console.log("retrieve before id =", lastId);
+  // console.log("retrieve before id =", lastId);
   let sql;
   let values;
   if (!lastId) {
@@ -60,16 +60,16 @@ const getMessages = async (userId, otherUserId, limit, lastId) => {
     values = [userId, otherUserId, otherUserId, userId, lastId, limit];
   }
 
-  console.log("=================start======================");
-  console.log("limit =", limit, "lastId =", lastId);
-  console.log("query = ", sql);
-  console.log("values = ", values);
+  // console.log("=================start======================");
+  // console.log("limit =", limit, "lastId =", lastId);
+  // console.log("query = ", sql);
+  // console.log("values = ", values);
 
   // Run sql
   const [rows] = await db.query(sql, values);
 
-  console.log("Retrieved messages:", rows);
-  console.log("=================end======================");
+  // console.log("Retrieved messages:", rows);
+  // console.log("=================end======================");
   return rows;
 };
 

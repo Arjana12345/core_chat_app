@@ -10,10 +10,8 @@ const { socketHandler } = require("./socket/socket");
 const app = express();
 const routes = require("./routes");
 const errorMiddleware = require("./middleware/errorMiddleware");
-// For local
-//app.use(cors());
 
-//For Development
+// CORS configuration
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
@@ -38,17 +36,6 @@ app.get("/health", (req, res) => {
     time: new Date(),
   });
 });
-
-/*
-app.get("/test", async (req, res) => {
-  const db = require("./config/db");
-  const [rows] = await db.query("SELECT * FROM users");
-
-  console.log(rows);
-
-  res.json(rows);
-});
-*/
 
 // create http server
 

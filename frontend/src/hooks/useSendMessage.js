@@ -10,8 +10,6 @@ const useSendMessage = ({
   chatRef,
 }) => {
   const handleSendMessage = useCallback(async () => {
-    console.log("handleSendMessage called with newMessage:", newMessage);
-
     if (!newMessage.trim()) return;
 
     try {
@@ -21,7 +19,7 @@ const useSendMessage = ({
       };
 
       // send real-time message
-      console.log("Sending message via socket:", message);
+      // console.log("Sending message via socket:", message);
       const socket = getSocket();
       socket.emit("sendMessage", message);
 

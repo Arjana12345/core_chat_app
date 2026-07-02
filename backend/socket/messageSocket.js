@@ -15,13 +15,13 @@ const messageSocket = (io, socket) => {
         message: messageData.message,
       });
 
-      console.log("Saved message:", savedMessage);
+      // console.log("Saved message:", savedMessage);
 
       const receiverSocket = getSocketId(savedMessage.receiver_id);
-      console.log("Receiver socket:", receiverSocket);
+      // console.log("Receiver socket:", receiverSocket);
 
       if (receiverSocket) {
-        console.log("Sending message to receiver:", receiverSocket);
+        // console.log("Sending message to receiver:", receiverSocket);
         io.to(receiverSocket).emit("receiveMessage", savedMessage);
       }
 

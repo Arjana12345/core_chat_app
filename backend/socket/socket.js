@@ -18,7 +18,7 @@ const socketHandler = (io) => {
 
     addUser(userId, socket.id);
 
-    console.log(onlineUsers);
+    // console.log(onlineUsers);
 
     messageSocket(io, socket);
 

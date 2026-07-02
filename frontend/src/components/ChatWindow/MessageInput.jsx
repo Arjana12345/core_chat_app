@@ -9,8 +9,7 @@ const MessageInput = ({
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      console.log("handleKeyDown called with Enter key");
-      console.log("Selected user:", selectedUser);
+
       handleSendMessage();
     }
   };

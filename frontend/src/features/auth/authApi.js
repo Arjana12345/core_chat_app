@@ -1,8 +1,6 @@
 import API from "../../services/api";
 
 export const registerUser = async (data) => {
-  console.log("Register URL:", API.defaults.baseURL + "/auth/register");
-
   const response = await API.post("/auth/register", data);
 
   return response.data;
